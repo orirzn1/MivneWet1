@@ -9,7 +9,17 @@
 #define DataTypes_h
 
 #include "wet1util.h"
+#include <exception>
+#include <new>
 
+class Failure : public std::exception
+{
+public:
+    const char * what() const throw ()
+    {
+        return "ID already exists";
+    }
+};
 template<class nodeType>
 struct node
 {
@@ -46,7 +56,7 @@ public:
             return a;
         return b;
     }
-    node<nodeType>* insert(node<nodeType>* Node, nodeType data, bool* identical)
+    node<nodeType>* insert(node<nodeType>* Node, nodeType data)
     {
         if(Node == nullptr)
         {
@@ -58,7 +68,7 @@ public:
             Node->right = insert(Node->right, data);
         else
         {
-            *identical = true;
+            throw Failure(); 
             return Node;
         }
         // Update parent node's height
@@ -66,8 +76,29 @@ public:
         // Get balance of parent
         int balance = getBalance(Node);
         // Check if parent is unbalanced and split into LL, RR, LR, RL rotation cases
-        
+        // LL
+        if (balance > 1 && data.ID < Node->left->data.ID)
+            return rightRotate(Node);
+        // RR
+        if (balance < -1 && data.ID > Node->right->data.ID)
+            return leftRotate(Node);
+     
+        // LR
+        if (balance > 1 && data.ID > Node->left->data.ID)
+        {
+            Node->left = leftRotate(Node->left);
+            return rightRotate(Node);
+        }
+     
+        // RL
+        if (balance < -1 && data.ID < Node->right->data.ID)
+        {
+            Node->right = rightRotate(Node->right);
+            return leftRotate(Node);
+        }
+        return Node;
     }
+    
 };
 
 struct movieData
