@@ -33,8 +33,21 @@ StatusType streaming_database::add_movie(int movieId, Genre genre, int views, bo
 
 StatusType streaming_database::remove_movie(int movieId)
 {
-	// TODO: Your code goes here
-	return StatusType::SUCCESS;
+    if(movieId <= 0)
+        return StatusType::INVALID_INPUT;
+    try
+    {
+        movieTree.remove(movieId);
+    }
+    catch(std::bad_alloc& e)
+    {
+        return StatusType::ALLOCATION_ERROR;
+    }
+    catch(Failure& e)
+    {
+        return StatusType::FAILURE;
+    }
+    return StatusType::SUCCESS;
 }
 
 StatusType streaming_database::add_user(int userId, bool isVip)

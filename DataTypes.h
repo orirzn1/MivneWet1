@@ -135,20 +135,20 @@ public:
         return current;
     }
     
-    void remove(nodeType data)
+    void remove(int ID)
     {
-        root = remove_recursion(root, data);
+        root = remove_recursion(root, ID);
     }
     
     
-    node<nodeType>* remove_recursion(node<nodeType>* Node, nodeType data)
+    node<nodeType>* remove_recursion(node<nodeType>* Node, int ID)
     {
         if (Node == nullptr)
-            return Node;
-        if (data.ID < Node->data.ID)
-            Node->left = remove_recursion(Node->left, data.ID);
-        else if(data.ID > Node->data.ID)
-            Node->right = remove_recursion(Node->right, data.ID);
+            throw Failure(); 
+        if (ID < Node->data.ID)
+            Node->left = remove_recursion(Node->left, ID);
+        else if(ID > Node->data.ID)
+            Node->right = remove_recursion(Node->right, ID);
         else
         {
             
@@ -175,7 +175,7 @@ public:
                 node<nodeType>* temp = leftLeaf(Node->right);
      
                 // Copy data
-                Node->data.ID = temp->data.Id;
+                Node->data.ID = temp->data.ID;
      
                 // Delete smallest in right subtree
                 Node->right = remove_recursion(Node->right,temp->data.ID);
