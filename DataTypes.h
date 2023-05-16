@@ -98,7 +98,101 @@ public:
         }
         return Node;
     }
-    
+    node<nodeType>* leftLeaf(node<nodeType>* Node)
+    {
+        node<nodeType>* current = Node;
+        while (current->left != nullptr)
+            current = current->left;
+        return current;
+    }
+    node<nodeType>* remove(node<nodeType>* Node, nodeType data)
+    {
+        if (root == NULL)
+            return root;
+        if (data.ID < root->data.ID)
+            root->left = deleteNode(root->left, data.ID);
+        else if(data.ID > root->data.ID)
+            root->right = deleteNode(root->right, data.ID);
+        else
+        {
+            
+            if((root->left == NULL) || (root->right == NULL))
+            {
+                node<nodeType>* temp;
+                if (root->left)
+                    temp = root->left;
+                else
+                    temp = root->right;
+                // No child case
+                if (temp == NULL)
+                {
+                    temp = root;
+                    root = NULL;
+                }
+                else // One child case
+                *root = *temp;
+                free(temp);
+            }
+            else
+            {
+                // node with two children: Get the inorder
+                // successor (smallest in the right subtree)
+                node<nodeType>* temp = leftLeaf(root->right);
+     
+                // Copy the inorder successor's
+                // data to this node
+                root->data.ID = temp->data.Id;
+     
+                // Delete the inorder successor
+                root->right = deleteNode(root->right,temp->data.ID);
+            }
+        }
+         
+            // If the tree had only one node
+            // then return
+            if (root == NULL)
+            return root;
+         
+            // STEP 2: UPDATE HEIGHT OF THE CURRENT NODE
+            root->height = 1 + max(height(root->left),
+                                   height(root->right));
+         
+            // STEP 3: GET THE BALANCE FACTOR OF
+            // THIS NODE (to check whether this
+            // node became unbalanced)
+            int balance = getBalance(root);
+         
+            // If this node becomes unbalanced,
+            // then there are 4 cases
+         
+            // Left Left Case
+            if (balance > 1 &&
+                getBalance(root->left) >= 0)
+                return rightRotate(root);
+         
+            // Left Right Case
+            if (balance > 1 &&
+                getBalance(root->left) < 0)
+            {
+                root->left = leftRotate(root->left);
+                return rightRotate(root);
+            }
+         
+            // Right Right Case
+            if (balance < -1 &&
+                getBalance(root->right) <= 0)
+                return leftRotate(root);
+         
+            // Right Left Case
+            if (balance < -1 &&
+                getBalance(root->right) > 0)
+            {
+                root->right = rightRotate(root->right);
+                return leftRotate(root);
+            }
+         
+            return root;
+    }
 };
 
 struct movieData
