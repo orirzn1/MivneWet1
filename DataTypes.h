@@ -66,7 +66,27 @@ public:
         // Get balance of parent
         int balance = getBalance(Node);
         // Check if parent is unbalanced and split into LL, RR, LR, RL rotation cases
-        
+        // LL
+        if (balance > 1 && data.ID < Node->left->data.ID)
+            return rightRotate(Node);
+        // RR
+        if (balance < -1 && data.ID > Node->right->data.ID)
+            return leftRotate(Node);
+     
+        // LR
+        if (balance > 1 && data.ID > Node->left->data.ID)
+        {
+            Node->left = leftRotate(Node->left);
+            return rightRotate(Node);
+        }
+     
+        // RL
+        if (balance < -1 && data.ID < Node->right->data.ID)
+        {
+            Node->right = rightRotate(Node->right);
+            return leftRotate(Node);
+        }
+        return Node;
     }
 };
 
