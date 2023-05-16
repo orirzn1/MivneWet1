@@ -33,8 +33,10 @@ struct node
 template<class nodeType>
 class tree
 {
-public:
+private:
     node<nodeType>* root;
+    
+public:
     tree() : root(nullptr) {}
     ~tree()
     {
@@ -69,9 +71,9 @@ public:
             return new node<nodeType>(data);
         }
         if (data.ID < Node->data.ID)
-            Node->left = insert(Node->left, data);
+            Node->left = insert_recursion(Node->left, data);
         else if (data.ID > Node->data.ID)
-            Node->right = insert(Node->right, data);
+            Node->right = insert_recursion(Node->right, data);
         else
         {
             throw Failure(); 
@@ -125,9 +127,9 @@ public:
         if (Node == nullptr)
             return Node;
         if (data.ID < root->data.ID)
-            Node->left = deleteNode(Node->left, data.ID);
+            Node->left = remove_recursion(Node->left, data.ID);
         else if(data.ID > Node->data.ID)
-            Node->right = deleteNode(Node->right, data.ID);
+            Node->right = remove_recursion(Node->right, data.ID);
         else
         {
             
@@ -157,7 +159,7 @@ public:
                 Node->data.ID = temp->data.Id;
      
                 // Delete smallest in right subtree
-                Node->right = deleteNode(Node->right,temp->data.ID);
+                Node->right = remove_recursion(Node->right,temp->data.ID);
             }
         }
             if (Node == NULL)
