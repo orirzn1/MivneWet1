@@ -15,7 +15,7 @@ StatusType streaming_database::add_movie(int movieId, Genre genre, int views, bo
 {
     movieData data(movieId, genre, views, vipOnly);
     node Node = node(data);
-    tree.insert();
+    movieTree.insert(&Node, data);
 	return StatusType::SUCCESS;
 }
 
