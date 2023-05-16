@@ -166,7 +166,7 @@ public:
                     Node = NULL;
                 }
                 else // One child case
-                *Node = *temp;
+                    *Node = *temp;
                 free(temp);
             }
             else
