@@ -13,10 +13,15 @@ streaming_database::~streaming_database()
 
 StatusType streaming_database::add_movie(int movieId, Genre genre, int views, bool vipOnly)
 {
+    if(genre == Genre::NONE || movieId <= 0 || views < 0)
+        return StatusType::INVALID_INPUT;
     movieData data(movieId, genre, views, vipOnly);
     node Node = node(data);
-    movieTree.insert(&Node, data);
-	return StatusType::SUCCESS;
+    bool check = false;
+    movieTree.root = movieTree.insert(&Node, data, &check);
+    if(check)
+        return StatusType::FAILURE;
+    return StatusType::SUCCESS;
 }
 
 StatusType streaming_database::remove_movie(int movieId)

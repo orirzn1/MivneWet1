@@ -23,10 +23,13 @@ struct node
 template<class nodeType>
 class tree
 {
-private:
-    node<nodeType>* root;
 public:
+    node<nodeType>* root;
     tree() : root(nullptr) {}
+    ~tree()
+    {
+        //TO DO
+    }
     int height(node<nodeType>* N)
     {
         if (N == NULL)
@@ -43,8 +46,26 @@ public:
             return a;
         return b;
     }
-    void insert(node<nodeType>* Node, nodeType data)
+    node<nodeType>* insert(node<nodeType>* Node, nodeType data, bool* identical)
     {
+        if(Node == nullptr)
+        {
+            return new node(data);
+        }
+        if (data.ID < Node->data.ID)
+            Node->left = insert(Node->left, data);
+        else if (data.ID > Node->data.ID)
+            Node->right = insert(Node->right, data);
+        else
+        {
+            *identical = true;
+            return Node;
+        }
+        // Update parent node's height
+        Node->height = 1 + max(height(Node->left), height(Node->right));
+        // Get balance of parent
+        int balance = getBalance(Node);
+        // Check if parent is unbalanced and split into LL, RR, LR, RL rotation cases
         
     }
 };
