@@ -16,12 +16,14 @@
 #define STREAMINGDBA1_H_
 
 #include "wet1util.h"
+#include "DataTypes.h"
 
 class streaming_database {
 private:
-	//
-	// Here you may add anything you want
-	//
+    tree<movieData> movieTree;
+    tree<userData> userTree;
+
+    
 	
 public:
 	// <DO-NOT-MODIFY> {

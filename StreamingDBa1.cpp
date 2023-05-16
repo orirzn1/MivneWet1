@@ -1,6 +1,6 @@
 #include "StreamingDBa1.h"
 
-streaming_database::streaming_database()
+streaming_database::streaming_database() : movieTree(), userTree()
 {
 	// TODO: Your code goes here
 }
@@ -13,7 +13,9 @@ streaming_database::~streaming_database()
 
 StatusType streaming_database::add_movie(int movieId, Genre genre, int views, bool vipOnly)
 {
-	// TODO: Your code goes here
+    movieData data(movieId, genre, views, vipOnly);
+    node Node = node(data);
+    tree.insert();
 	return StatusType::SUCCESS;
 }
 
