@@ -17,10 +17,18 @@ StatusType streaming_database::add_movie(int movieId, Genre genre, int views, bo
         return StatusType::INVALID_INPUT;
     movieData data(movieId, genre, views, vipOnly);
     node Node = node(data);
-    bool check = false;
-    movieTree.root = movieTree.insert(&Node, data, &check);
-    if(check)
+    try
+    {
+        movieTree.root = movieTree.insert(&Node, data);
+    }
+    catch(std::bad_alloc& e)
+    {
+        return StatusType::ALLOCATION_ERROR; 
+    }
+    catch(Failure& e)
+    {
         return StatusType::FAILURE;
+    }
     return StatusType::SUCCESS;
 }
 
