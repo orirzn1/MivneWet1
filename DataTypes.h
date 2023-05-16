@@ -58,7 +58,27 @@ public:
             return a;
         return b;
     }
-    
+
+
+
+    node<nodeType>* rightRotate(node<nodeType>* node_a){
+        node<nodeType>* node_b = node_a->left;
+        node_a->left = node_b->right;
+        node_b->right = node_a;
+        return node_b;
+
+    }
+
+
+    node<nodeType>* leftRotate(node<nodeType>* node_a){
+        node<nodeType>* node_b = node_a->right;
+        node_a->right = node_b->left;
+        node_b->left = node_a;
+        return node_b;
+
+    }
+
+
     void insert(node<nodeType>* Node)
     {
         nodeType data = Node->data;
@@ -77,8 +97,7 @@ public:
             Node->right = insert_recursion(Node->right, data);
         else
         {
-            throw Failure(); 
-            return Node;
+            throw Failure();
         }
         // Update parent node's height
         Node->height = 1 + max(height(Node->left), height(Node->right));
