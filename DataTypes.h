@@ -59,8 +59,9 @@ public:
         return b;
     }
     
-    void insert(node<nodeType>* Node, nodeType data)
+    void insert(node<nodeType>* Node)
     {
+        nodeType data = Node->data;
         root = insert_recursion(Node, data);
     }
     
@@ -116,8 +117,9 @@ public:
         return current;
     }
     
-    void remove(node<nodeType>* Node, nodeType data)
+    void remove(node<nodeType>* Node)
     {
+        nodeType data = Node->data;
         root = remove_recursion(Node, data);
     }
     
