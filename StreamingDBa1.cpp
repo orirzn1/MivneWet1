@@ -19,7 +19,7 @@ StatusType streaming_database::add_movie(int movieId, Genre genre, int views, bo
     node Node = node(data);
     try
     {
-        movieTree.root = movieTree.insert(&Node, data);
+        movieTree.insert(&Node, data);
     }
     catch(std::bad_alloc& e)
     {

@@ -56,11 +56,17 @@ public:
             return a;
         return b;
     }
-    node<nodeType>* insert(node<nodeType>* Node, nodeType data)
+    
+    void insert(node<nodeType>* Node, nodeType data)
+    {
+        root = insert_recursion(Node, data);
+    }
+    
+    node<nodeType>* insert_recursion(node<nodeType>* Node, nodeType data)
     {
         if(Node == nullptr)
         {
-            return new node(data);
+            return new node<nodeType>(data);
         }
         if (data.ID < Node->data.ID)
             Node->left = insert(Node->left, data);
@@ -98,6 +104,8 @@ public:
         }
         return Node;
     }
+    
+    
     node<nodeType>* leftLeaf(node<nodeType>* Node)
     {
         node<nodeType>* current = Node;
@@ -105,93 +113,89 @@ public:
             current = current->left;
         return current;
     }
-    node<nodeType>* remove(node<nodeType>* Node, nodeType data)
+    
+    void remove(node<nodeType>* Node, nodeType data)
     {
-        if (root == NULL)
-            return root;
+        root = remove_recursion(Node, data);
+    }
+    
+    
+    node<nodeType>* remove_recursion(node<nodeType>* Node, nodeType data)
+    {
+        if (Node == nullptr)
+            return Node;
         if (data.ID < root->data.ID)
-            root->left = deleteNode(root->left, data.ID);
-        else if(data.ID > root->data.ID)
-            root->right = deleteNode(root->right, data.ID);
+            Node->left = deleteNode(Node->left, data.ID);
+        else if(data.ID > Node->data.ID)
+            Node->right = deleteNode(Node->right, data.ID);
         else
         {
             
-            if((root->left == NULL) || (root->right == NULL))
+            if((Node->left == NULL) || (Node->right == NULL))
             {
                 node<nodeType>* temp;
-                if (root->left)
-                    temp = root->left;
+                if (Node->left)
+                    temp = Node->left;
                 else
-                    temp = root->right;
+                    temp = Node->right;
                 // No child case
                 if (temp == NULL)
                 {
                     temp = root;
-                    root = NULL;
+                    Node = NULL;
                 }
                 else // One child case
-                *root = *temp;
+                *Node = *temp;
                 free(temp);
             }
             else
             {
-                // node with two children: Get the inorder
-                // successor (smallest in the right subtree)
-                node<nodeType>* temp = leftLeaf(root->right);
+                // node with two children: Get smallest in the right subtree
+                node<nodeType>* temp = leftLeaf(Node->right);
      
-                // Copy the inorder successor's
-                // data to this node
-                root->data.ID = temp->data.Id;
+                // Copy data
+                Node->data.ID = temp->data.Id;
      
-                // Delete the inorder successor
-                root->right = deleteNode(root->right,temp->data.ID);
+                // Delete smallest in right subtree
+                Node->right = deleteNode(Node->right,temp->data.ID);
             }
         }
+            if (Node == NULL)
+            return Node;
+        
+            Node->height = 1 + max(height(root->left), height(root->right));
+
+            int balance = getBalance(Node);
          
-            // If the tree had only one node
-            // then return
-            if (root == NULL)
-            return root;
+            //Check balance
          
-            // STEP 2: UPDATE HEIGHT OF THE CURRENT NODE
-            root->height = 1 + max(height(root->left),
-                                   height(root->right));
-         
-            // STEP 3: GET THE BALANCE FACTOR OF
-            // THIS NODE (to check whether this
-            // node became unbalanced)
-            int balance = getBalance(root);
-         
-            // If this node becomes unbalanced,
-            // then there are 4 cases
-         
-            // Left Left Case
+            // LL
             if (balance > 1 &&
-                getBalance(root->left) >= 0)
-                return rightRotate(root);
+                getBalance(Node->left) >= 0)
+                return rightRotate(Node);
          
-            // Left Right Case
+            // LR
             if (balance > 1 &&
-                getBalance(root->left) < 0)
+                getBalance(Node->left) < 0)
             {
-                root->left = leftRotate(root->left);
-                return rightRotate(root);
+                root->left = leftRotate(Node->left);
+                return rightRotate(Node);
             }
          
-            // Right Right Case
+            // RR
             if (balance < -1 &&
-                getBalance(root->right) <= 0)
-                return leftRotate(root);
+                getBalance(Node->right) <= 0)
+                return leftRotate(Node);
          
-            // Right Left Case
+            // RL
             if (balance < -1 &&
-                getBalance(root->right) > 0)
+                getBalance(Node->right) > 0)
             {
-                root->right = rightRotate(root->right);
-                return leftRotate(root);
+                Node->right = rightRotate(Node->right);
+                return leftRotate(Node);
             }
          
-            return root;
+            return Node;
     }
 };
 
