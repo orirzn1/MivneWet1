@@ -79,10 +79,9 @@ public:
     }
 
 
-    void insert(node<nodeType>* Node)
+    void insert(nodeType data)
     {
-        nodeType data = Node->data;
-        root = insert_recursion(Node, data);
+        root = insert_recursion(root, data);
     }
     
     node<nodeType>* insert_recursion(node<nodeType>* Node, nodeType data)
@@ -136,10 +135,9 @@ public:
         return current;
     }
     
-    void remove(node<nodeType>* Node)
+    void remove(nodeType data)
     {
-        nodeType data = Node->data;
-        root = remove_recursion(Node, data);
+        root = remove_recursion(root, data);
     }
     
     
@@ -147,7 +145,7 @@ public:
     {
         if (Node == nullptr)
             return Node;
-        if (data.ID < root->data.ID)
+        if (data.ID < Node->data.ID)
             Node->left = remove_recursion(Node->left, data.ID);
         else if(data.ID > Node->data.ID)
             Node->right = remove_recursion(Node->right, data.ID);
@@ -164,7 +162,7 @@ public:
                 // No child case
                 if (temp == NULL)
                 {
-                    temp = root;
+                    temp = Node;
                     Node = NULL;
                 }
                 else // One child case
@@ -186,7 +184,7 @@ public:
             if (Node == NULL)
             return Node;
         
-            Node->height = 1 + max(height(root->left), height(root->right));
+            Node->height = 1 + max(height(Node->left), height(Node->right));
 
             int balance = getBalance(Node);
          
@@ -201,7 +199,7 @@ public:
             if (balance > 1 &&
                 getBalance(Node->left) < 0)
             {
-                root->left = leftRotate(Node->left);
+                Node->left = leftRotate(Node->left);
                 return rightRotate(Node);
             }
          

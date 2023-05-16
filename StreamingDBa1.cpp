@@ -16,10 +16,9 @@ StatusType streaming_database::add_movie(int movieId, Genre genre, int views, bo
     if(genre == Genre::NONE || movieId <= 0 || views < 0)
         return StatusType::INVALID_INPUT;
     movieData data(movieId, genre, views, vipOnly);
-    node Node = node(data);
     try
     {
-        movieTree.insert(&Node);
+        movieTree.insert(data);
     }
     catch(std::bad_alloc& e)
     {
