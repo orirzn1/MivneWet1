@@ -65,8 +65,11 @@ public:
         node<nodeType>* node_b = node_a->left;
         node_a->left = node_b->right;
         node_b->right = node_a;
-        return node_b;
 
+
+        node_a->height = max(height(node_a->left), height(node_a->right))+1;
+        node_b->height = max(height(node_b->left), height(node_b->right))+1;
+        return node_b;
     }
 
 
@@ -74,10 +77,13 @@ public:
         node<nodeType>* node_b = node_a->right;
         node_a->right = node_b->left;
         node_b->left = node_a;
+
+
+        node_a->height = max(height(node_a->left), height(node_a->right))+1;
+        node_b->height = max(height(node_b->left), height(node_b->right))+1;
         return node_b;
 
     }
-
 
     void insert(nodeType data)
     {
@@ -217,6 +223,30 @@ public:
             }
          
             return Node;
+    }
+
+    //remember to delete
+    void printTree() const {
+        printTree(root, 0);
+    }
+
+private:
+    void printTree(node<nodeType>* Node, int level) const {
+        if (Node == nullptr)
+            return;
+
+        // Print right subtree
+        printTree(Node->right, level + 1);
+
+        // Indentation based on the level
+        for (int i = 0; i < level; ++i)
+            std::cout << "    ";
+
+        // Print current node's ID
+        std::cout << Node->data.ID << std::endl;
+
+        // Print left subtree
+        printTree(Node->left, level + 1);
     }
 };
 
