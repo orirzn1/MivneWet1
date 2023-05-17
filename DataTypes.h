@@ -11,6 +11,7 @@
 #include "wet1util.h"
 #include <exception>
 #include <new>
+#include <iostream>
 
 class Failure : public std::exception
 {
