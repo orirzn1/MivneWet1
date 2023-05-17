@@ -44,7 +44,7 @@ public:
     }
     int height(node<nodeType>* N)
     {
-        if (N == NULL)
+        if (N == nullptr)
             return 0;
         return N->height;
     }
@@ -158,7 +158,7 @@ public:
         else
         {
             
-            if((Node->left == NULL) || (Node->right == NULL))
+            if((Node->left == nullptr) || (Node->right == nullptr))
             {
                 node<nodeType>* temp;
                 if (Node->left)
@@ -166,10 +166,10 @@ public:
                 else
                     temp = Node->right;
                 // No child case
-                if (temp == NULL)
+                if (temp == nullptr)
                 {
                     temp = Node;
-                    Node = NULL;
+                    Node = nullptr;
                 }
                 else // One child case
                     *Node = *temp;
@@ -187,7 +187,7 @@ public:
                 Node->right = remove_recursion(Node->right,temp->data.ID);
             }
         }
-            if (Node == NULL)
+            if (Node == nullptr)
             return Node;
         
             Node->height = 1 + max(height(Node->left), height(Node->right));
