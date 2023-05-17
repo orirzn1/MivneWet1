@@ -22,6 +22,7 @@ class streaming_database {
 private:
     tree<movieData> movieTree;
     tree<userData> userTree;
+    tree<groupData> groupTree;
 
     
 	

@@ -12,6 +12,8 @@
 #include <exception>
 #include <new>
 #include <iostream>
+#include <vector>
+#include <memory>
 
 class Failure : public std::exception
 {
@@ -24,11 +26,11 @@ public:
 template<class nodeType>
 struct node
 {
-    nodeType data;
+    nodeType* data;
     node* left;
     node* right;
     int height;
-    node(const nodeType& data) : data(data), left(nullptr), right(nullptr), height(1){}
+    node(nodeType* data) : data(data), left(nullptr), right(nullptr), height(1){}
 };
 
 template<class nodeType>
@@ -86,20 +88,20 @@ public:
 
     }
 
-    void insert(nodeType data)
+    void insert(nodeType& data)
     {
         root = insert_recursion(root, data);
     }
     
-    node<nodeType>* insert_recursion(node<nodeType>* Node, nodeType data)
+    node<nodeType>* insert_recursion(node<nodeType>* Node, nodeType& data)
     {
         if(Node == nullptr)
         {
-            return new node<nodeType>(data);
+            return new node<nodeType>(&data);
         }
-        if (data.ID < Node->data.ID)
+        if (data.ID < Node->data->ID)
             Node->left = insert_recursion(Node->left, data);
-        else if (data.ID > Node->data.ID)
+        else if (data.ID > Node->data->ID)
             Node->right = insert_recursion(Node->right, data);
         else
         {
@@ -111,21 +113,21 @@ public:
         int balance = getBalance(Node);
         // Check if parent is unbalanced and split into LL, RR, LR, RL rotation cases
         // LL
-        if (balance > 1 && data.ID < Node->left->data.ID)
+        if (balance > 1 && data.ID < Node->left->data->ID)
             return rightRotate(Node);
         // RR
-        if (balance < -1 && data.ID > Node->right->data.ID)
+        if (balance < -1 && data.ID > Node->right->data->ID)
             return leftRotate(Node);
      
         // LR
-        if (balance > 1 && data.ID > Node->left->data.ID)
+        if (balance > 1 && data.ID > Node->left->data->ID)
         {
             Node->left = leftRotate(Node->left);
             return rightRotate(Node);
         }
      
         // RL
-        if (balance < -1 && data.ID < Node->right->data.ID)
+        if (balance < -1 && data.ID < Node->right->data->ID)
         {
             Node->right = rightRotate(Node->right);
             return leftRotate(Node);
@@ -152,13 +154,12 @@ public:
     {
         if (Node == nullptr)
             throw Failure(); 
-        if (ID < Node->data.ID)
+        if (ID < Node->data->ID)
             Node->left = remove_recursion(Node->left, ID);
-        else if(ID > Node->data.ID)
+        else if(ID > Node->data->ID)
             Node->right = remove_recursion(Node->right, ID);
         else
         {
-            
             if((Node->left == nullptr) || (Node->right == nullptr))
             {
                 node<nodeType>* temp;
@@ -182,10 +183,10 @@ public:
                 node<nodeType>* temp = leftLeaf(Node->right);
      
                 // Copy data
-                Node->data.ID = temp->data.ID;
+                Node->data->ID = temp->data->ID;
      
                 // Delete smallest in right subtree
-                Node->right = remove_recursion(Node->right,temp->data.ID);
+                Node->right = remove_recursion(Node->right,temp->data->ID);
             }
         }
             if (Node == nullptr)
@@ -224,6 +225,25 @@ public:
             }
          
             return Node;
+    }
+    
+    node<nodeType>* findNode(int ID)
+    {
+        return findNodeRecursion(root, ID); 
+    }
+    
+    node<nodeType>* findNodeRecursion(node<nodeType>* Node, int ID)
+    {
+        if (Node == nullptr)
+            throw Failure();
+        if (ID < Node->data->ID)
+            return findNodeRecursion(Node->left, ID);
+        else if(ID > Node->data->ID)
+            return findNodeRecursion(Node->right, ID);
+        else
+        {
+            return Node;
+        }
     }
 
     //remember to delete
@@ -267,6 +287,18 @@ struct userData
     bool vipStatus;
     userData(int ID, bool status) : ID(ID), vipStatus(status) {}
     ~userData() = default;
+};
+
+
+struct groupData
+{
+    int ID;
+    tree<userData> users;
+    groupData(int ID) : ID(ID), users(){}
+    void add_user(userData data)
+    {
+        users.insert(data);
+    }
 };
 
 #endif /* DataTypes_h */

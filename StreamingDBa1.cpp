@@ -1,6 +1,6 @@
 #include "StreamingDBa1.h"
 
-streaming_database::streaming_database() : movieTree(), userTree()
+streaming_database::streaming_database() : movieTree(), userTree(), groupTree()
 {
 	// TODO: Your code goes here
 }
@@ -52,37 +52,125 @@ StatusType streaming_database::remove_movie(int movieId)
 
 StatusType streaming_database::add_user(int userId, bool isVip)
 {
-	// TODO: Your code goes here
+    if(userId <= 0)
+        return StatusType::INVALID_INPUT;
+    userData data(userId, isVip);
+    try
+    {
+        userTree.insert(data);
+    }
+    catch(std::bad_alloc& e)
+    {
+        return StatusType::ALLOCATION_ERROR;
+    }
+    catch(Failure& e)
+    {
+        return StatusType::FAILURE;
+    }
 	return StatusType::SUCCESS;
 }
 
 StatusType streaming_database::remove_user(int userId)
 {
-	// TODO: Your code goes here
-	return StatusType::SUCCESS;
+    if(userId <= 0)
+        return StatusType::INVALID_INPUT;
+    try
+    {
+        userTree.remove(userId);
+    }
+    catch(std::bad_alloc& e)
+    {
+        return StatusType::ALLOCATION_ERROR;
+    }
+    catch(Failure& e)
+    {
+        return StatusType::FAILURE;
+    }
+    return StatusType::SUCCESS;
 }
 
 StatusType streaming_database::add_group(int groupId)
 {
-	// TODO: Your code goes here
-	return StatusType::SUCCESS;
+    if(groupId <= 0)
+        return StatusType::INVALID_INPUT;
+    groupData group(groupId);
+    try
+    {
+        groupTree.insert(group);
+    }
+    catch(std::bad_alloc& e)
+    {
+        return StatusType::ALLOCATION_ERROR;
+    }
+    catch(Failure& e)
+    {
+        return StatusType::FAILURE;
+    }
+    return StatusType::SUCCESS;
 }
 
 StatusType streaming_database::remove_group(int groupId)
 {
-	// TODO: Your code goes here
-	return StatusType::SUCCESS;
+    if(groupId <= 0)
+        return StatusType::INVALID_INPUT;
+    try
+    {
+        groupTree.remove(groupId);
+    }
+    catch(std::bad_alloc& e)
+    {
+        return StatusType::ALLOCATION_ERROR;
+    }
+    catch(Failure& e)
+    {
+        return StatusType::FAILURE;
+    }
+    return StatusType::SUCCESS;
 }
 
 StatusType streaming_database::add_user_to_group(int userId, int groupId)
 {
-	// TODO: Your code goes here
+    if(userId <=0 || groupId <= 0)
+        return StatusType::INVALID_INPUT;
+    try
+    {
+        groupData* group = (groupTree.findNode(groupId))->data;
+        userData user = *((userTree.findNode(userId))->data);
+        group->add_user(user);
+    }
+    catch(Failure& e)
+    {
+        return StatusType::FAILURE;
+    }
+    catch(std::bad_alloc& e)
+    {
+        return StatusType::ALLOCATION_ERROR;
+    }
+    
     return StatusType::SUCCESS;
 }
 
 StatusType streaming_database::user_watch(int userId, int movieId)
 {
-	// TODO: Your code goes here
+    if(userId <=0 || movieId <= 0)
+        return StatusType::INVALID_INPUT;
+    try
+    {
+        movieData* movie = (movieTree.findNode(movieId))->data;
+        userData* user = (userTree.findNode(userId))->data;
+        if(movie->vipOnly && !(user->vipStatus))
+            return StatusType::FAILURE;
+        (movie->views)++;
+    }
+    catch(Failure& e)
+    {
+        return StatusType::FAILURE;
+    }
+    catch(std::bad_alloc& e)
+    {
+        return StatusType::ALLOCATION_ERROR;
+    }
+    
     return StatusType::SUCCESS;
 }
 
