@@ -45,8 +45,19 @@ public:
     tree() : root(nullptr), largest_node_ID(0), node_count(0) {}
     ~tree()
     {
-        //TO DO
+        destroyTree(root);
     }
+    
+    void destroyTree(node<nodeType, keyType>* N)
+    {
+        if(N)
+        {
+            destroyTree(N->right);
+            destroyTree(N->left);
+            delete N; 
+        }
+    }
+    
     int getLargestNodeID()
     {
         return largest_node_ID;

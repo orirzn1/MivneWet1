@@ -1,13 +1,9 @@
 #include "StreamingDBa1.h"
 
-streaming_database::streaming_database() : movieTree(), userTree(), groupTree()
-{
-	// TODO: Your code goes here
+streaming_database::streaming_database() : movieTree(), userTree(), groupTree(), comedyTree(), dramaTree(), actionTree(), fantasyTree(), noneTree(){
 }
 
-streaming_database::~streaming_database()
-{
-	// TODO: Your code goes here
+streaming_database::~streaming_database(){
 }
 
 
