@@ -23,35 +23,42 @@ public:
         return "ID already exists";
     }
 };
-template<class nodeType>
+template<class nodeType, class keyType>
 struct node
 {
+    keyType key;
     nodeType* data;
     node* left;
     node* right;
     int height;
-    node(nodeType* data) : data(data), left(nullptr), right(nullptr), height(1){}
+    node(nodeType* data, keyType key) : key(key), data(data), left(nullptr), right(nullptr), height(1){}
 };
 
-template<class nodeType>
+template<class nodeType, class keyType>
 class tree
 {
 private:
-    node<nodeType>* root;
+    node<nodeType, keyType>* root;
+    int largest_node_ID;
+    int node_count;
     
 public:
-    tree() : root(nullptr) {}
+    tree() : root(nullptr), largest_node_ID(0), node_count(0) {}
     ~tree()
     {
         //TO DO
     }
-    int height(node<nodeType>* N)
+    int getLargestNodeID()
+    {
+        return largest_node_ID;
+    }
+    int height(node<nodeType, keyType>* N)
     {
         if (N == nullptr)
             return 0;
         return N->height;
     }
-    int getBalance(node<nodeType>* N)
+    int getBalance(node<nodeType, keyType>* N)
     {
         return height(N->left) - height(N->right);
     }
@@ -61,11 +68,17 @@ public:
             return a;
         return b;
     }
+    node<nodeType, keyType>* getRoot()
+    {
+        return root;
+    }
+    int getCount()
+    {
+        return node_count; 
+    }
 
-
-
-    node<nodeType>* rightRotate(node<nodeType>* node_a){
-        node<nodeType>* node_b = node_a->left;
+    node<nodeType, keyType>* rightRotate(node<nodeType, keyType>* node_a){
+        node<nodeType, keyType>* node_b = node_a->left;
         node_a->left = node_b->right;
         node_b->right = node_a;
 
@@ -76,8 +89,8 @@ public:
     }
 
 
-    node<nodeType>* leftRotate(node<nodeType>* node_a){
-        node<nodeType>* node_b = node_a->right;
+    node<nodeType, keyType>* leftRotate(node<nodeType, keyType>* node_a){
+        node<nodeType, keyType>* node_b = node_a->right;
         node_a->right = node_b->left;
         node_b->left = node_a;
 
@@ -88,21 +101,24 @@ public:
 
     }
 
-    void insert(nodeType& data)
+    void insert(nodeType& data, keyType key)
     {
-        root = insert_recursion(root, data);
+        if(key > rightLeaf(root)->key || root == nullptr)
+            largest_node_ID = data.ID;
+        root = insert_recursion(root, data, key);
+        node_count++;
     }
     
-    node<nodeType>* insert_recursion(node<nodeType>* Node, nodeType& data)
+    node<nodeType, keyType>* insert_recursion(node<nodeType, keyType>* Node, nodeType& data, keyType key)
     {
         if(Node == nullptr)
         {
-            return new node<nodeType>(&data);
+            return new node<nodeType, keyType>(&data, key);
         }
         if (data.ID < Node->data->ID)
-            Node->left = insert_recursion(Node->left, data);
+            Node->left = insert_recursion(Node->left, data, key);
         else if (data.ID > Node->data->ID)
-            Node->right = insert_recursion(Node->right, data);
+            Node->right = insert_recursion(Node->right, data, key);
         else
         {
             throw Failure();
@@ -136,33 +152,43 @@ public:
     }
     
     
-    node<nodeType>* leftLeaf(node<nodeType>* Node)
+    node<nodeType, keyType>* leftLeaf(node<nodeType, keyType>* Node)
     {
-        node<nodeType>* current = Node;
+        node<nodeType, keyType>* current = Node;
         while (current->left != nullptr)
             current = current->left;
         return current;
     }
     
-    void remove(int ID)
+    node<nodeType, keyType>* rightLeaf(node<nodeType, keyType>* Node)
     {
-        root = remove_recursion(root, ID);
+        node<nodeType, keyType>* current = Node;
+        while (current->right != nullptr)
+            current = current->right;
+        return current;
+    }
+    
+    void remove(keyType key)
+    {
+        root = remove_recursion(root, key);
+        largest_node_ID = rightLeaf(root)->data->ID;
+        node_count--;
     }
     
     
-    node<nodeType>* remove_recursion(node<nodeType>* Node, int ID)
+    node<nodeType, keyType>* remove_recursion(node<nodeType, keyType>* Node, keyType key)
     {
         if (Node == nullptr)
             throw Failure(); 
-        if (ID < Node->data->ID)
-            Node->left = remove_recursion(Node->left, ID);
-        else if(ID > Node->data->ID)
-            Node->right = remove_recursion(Node->right, ID);
+        if (key < Node->key)
+            Node->left = remove_recursion(Node->left, key);
+        else if(key > Node->key)
+            Node->right = remove_recursion(Node->right, key);
         else
         {
             if((Node->left == nullptr) || (Node->right == nullptr))
             {
-                node<nodeType>* temp;
+                node<nodeType, keyType>* temp;
                 if (Node->left)
                     temp = Node->left;
                 else
@@ -180,13 +206,13 @@ public:
             else
             {
                 // node with two children: Get smallest in the right subtree
-                node<nodeType>* temp = leftLeaf(Node->right);
+                node<nodeType, keyType>* temp = leftLeaf(Node->right);
      
                 // Copy data
-                Node->data->ID = temp->data->ID;
+                Node->key = temp->key;
      
                 // Delete smallest in right subtree
-                Node->right = remove_recursion(Node->right,temp->data->ID);
+                Node->right = remove_recursion(Node->right,temp->key);
             }
         }
             if (Node == nullptr)
@@ -227,19 +253,19 @@ public:
             return Node;
     }
     
-    node<nodeType>* findNode(int ID)
+    node<nodeType, keyType>* findNode(keyType key)
     {
-        return findNodeRecursion(root, ID); 
+        return findNodeRecursion(root, key);
     }
     
-    node<nodeType>* findNodeRecursion(node<nodeType>* Node, int ID)
+    node<nodeType, keyType>* findNodeRecursion(node<nodeType, keyType>* Node, keyType key)
     {
         if (Node == nullptr)
             throw Failure();
-        if (ID < Node->data->ID)
-            return findNodeRecursion(Node->left, ID);
-        else if(ID > Node->data->ID)
-            return findNodeRecursion(Node->right, ID);
+        if (key < Node->key)
+            return findNodeRecursion(Node->left, key);
+        else if(key > Node->key)
+            return findNodeRecursion(Node->right, key); 
         else
         {
             return Node;
@@ -247,12 +273,31 @@ public:
     }
 
     //remember to delete
-    void printTree() const {
+    void printTree() const
+    {
         printTree(root, 0);
+    }
+    
+    StatusType insertDescendingOrder(int *const output)
+    {
+        if(this->node_count == 0)
+            return StatusType::FAILURE;
+        insertDescendingOrderRecursion(output, root, 0);
+        return StatusType::SUCCESS;
+    }
+    
+    void insertDescendingOrderRecursion(int *const output, node<nodeType, keyType>* node, int index)
+    {
+        if(node == nullptr)
+            return;
+        insertDescendingOrderRecursion(output, node->right, index);
+        output[index] = node->data->ID;
+        index++;
+        insertDescendingOrderRecursion(output, node->left, index);
     }
 
 private:
-    void printTree(node<nodeType>* Node, int level) const {
+    void printTree(node<nodeType, keyType>* Node, int level) const {
         if (Node == nullptr)
             return;
 
@@ -277,15 +322,37 @@ struct movieData
     Genre genre;
     int views;
     bool vipOnly;
-    movieData(int ID, Genre genre, int views, bool VIP) : ID(ID), genre(genre), views(views), vipOnly(VIP) {}
+    int rating;
+    int num_of_ratings;
+    movieData(int ID, Genre genre, int views, bool VIP) : ID(ID), genre(genre), views(views), vipOnly(VIP), rating(0), num_of_ratings(0) {}
     ~movieData() = default;
+    
+    bool operator < (const movieData& other)
+    {
+        if(rating < other.rating)
+            return true;
+        if(rating == other.rating && views < other.views)
+            return true;
+        if(rating == other.rating && views == other.views && ID > other.ID)
+            return true;
+        
+        return false;
+    }
+    bool operator > (const movieData& other)
+    {
+        return !(*this < other);
+    }
 };
+
+struct groupData;
 
 struct userData
 {
     int ID;
     bool vipStatus;
-    userData(int ID, bool status) : ID(ID), vipStatus(status) {}
+    int views[5];
+    groupData* group;
+    userData(int ID, bool status) : ID(ID), vipStatus(status), views(), group(nullptr) {}
     ~userData() = default;
 };
 
@@ -293,11 +360,47 @@ struct userData
 struct groupData
 {
     int ID;
-    tree<userData> users;
-    groupData(int ID) : ID(ID), users(){}
+    int user_count;
+    bool VIP;
+    tree<userData, int> users;
+    int views[5];
+    
+    groupData(int ID) : ID(ID), user_count(0), VIP(false), users(), views(){}
     void add_user(userData data)
     {
-        users.insert(data);
+        users.insert(data, data.ID);
+        user_count++;
+        if(data.vipStatus == true)
+            VIP = true; 
+    }
+    Genre findFavoriteGenre()
+    {
+        int max = 0;
+        for(int i = 1; i < 5; i++)
+        {
+           if(views[i] > views[i-1])
+               max = i;
+        }
+        if(views[max] == 0)
+            throw Failure();
+        switch(max)
+        {
+            case 0:
+                return Genre::COMEDY;
+                break;
+            case 1:
+                return Genre::DRAMA;
+                break;
+            case 2:
+                return Genre::ACTION;
+                break;
+            case 3:
+                return Genre::FANTASY;
+                break;
+            default:
+                return Genre::NONE;
+                break;
+        }
     }
 };
 

@@ -20,10 +20,14 @@
 
 class streaming_database {
 private:
-    tree<movieData> movieTree;
-    tree<userData> userTree;
-    tree<groupData> groupTree;
-
+    tree<movieData, int> movieTree;
+    tree<userData, int> userTree;
+    tree<groupData, int> groupTree;
+    tree<movieData, movieData> comedyTree;
+    tree<movieData, movieData> dramaTree;
+    tree<movieData, movieData> actionTree;
+    tree<movieData, movieData> fantasyTree;
+    tree<movieData, movieData> noneTree;
     
 	
 public:
