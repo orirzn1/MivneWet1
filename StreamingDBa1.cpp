@@ -287,19 +287,19 @@ output_t<int> streaming_database::get_all_movies_count(Genre genre)
     switch(genre)
     {
         case Genre::COMEDY:
-            return output_t(comedyTree.getCount());
+            return output_t<int>(comedyTree.getCount());
             break;
         case Genre::DRAMA:
-            return output_t(dramaTree.getCount());
+            return output_t<int>(dramaTree.getCount());
             break;
         case Genre::ACTION:
-            return output_t(actionTree.getCount());
+            return output_t<int>(actionTree.getCount());
             break;
         case Genre::FANTASY:
-            return output_t(fantasyTree.getCount());
+            return output_t<int>(fantasyTree.getCount());
             break;
         case Genre::NONE:
-            return output_t(noneTree.getCount());
+            return output_t<int>(noneTree.getCount());
             break;
     }
 }
@@ -339,19 +339,19 @@ output_t<int> streaming_database::get_num_views(int userId, Genre genre)
         switch(genre)
         {
             case Genre::COMEDY:
-                return output_t(user->views[0]);
+                return output_t<int>(user->views[0]);
                 break;
             case Genre::DRAMA:
-                return output_t(user->views[1]);
+                return output_t<int>(user->views[1]);
                 break;
             case Genre::ACTION:
-                return output_t(user->views[2]);
+                return output_t<int>(user->views[2]);
                 break;
             case Genre::FANTASY:
-                return output_t(user->views[3]);
+                return output_t<int>(user->views[3]);
                 break;
             case Genre::NONE:
-                return output_t(user->views[4]);
+                return output_t<int>(user->views[4]);
                 break;
         }
     }
@@ -429,31 +429,31 @@ output_t<int> streaming_database::get_group_recommendation(int groupId)
             case Genre::COMEDY:
                 movieID = comedyTree.getLargestNodeID();
                 if(movieID != 0)
-                    return output_t(movieID);
+                    return output_t<int>(movieID);
                 return output_t<int>(StatusType::FAILURE);
                 break;
             case Genre::DRAMA:
                 movieID = dramaTree.getLargestNodeID();
                 if(movieID != 0)
-                    return output_t(movieID);
+                    return output_t<int>(movieID);
                 return output_t<int>(StatusType::FAILURE);
                 break;
             case Genre::ACTION:
                 movieID = actionTree.getLargestNodeID();
                 if(movieID != 0)
-                    return output_t(movieID);
+                    return output_t<int>(movieID);
                 return output_t<int>(StatusType::FAILURE);
                 break;
             case Genre::FANTASY:
                 movieID = fantasyTree.getLargestNodeID();
                 if(movieID != 0)
-                    return output_t(movieID);
+                    return output_t<int>(movieID);
                 return output_t<int>(StatusType::FAILURE);
                 break;
             case Genre::NONE:
                 movieID = noneTree.getLargestNodeID();
                 if(movieID != 0)
-                    return output_t(movieID);
+                    return output_t<int>(movieID);
                 return output_t<int>(StatusType::FAILURE);
                 break;
         }

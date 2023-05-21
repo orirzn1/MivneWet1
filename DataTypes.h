@@ -12,7 +12,6 @@
 #include <exception>
 #include <new>
 #include <iostream>
-#include <vector>
 #include <memory>
 
 class Failure : public std::exception
