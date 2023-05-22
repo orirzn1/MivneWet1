@@ -22,6 +22,7 @@ public:
         return "FAILURE";
     }
 };
+
 template<class nodeType, class keyType>
 struct node
 {
@@ -30,7 +31,7 @@ struct node
     node* left;
     node* right;
     int height;
-    node(nodeType* data, keyType key) : key(key), data(data), left(nullptr), right(nullptr), height(1){}
+    node(nodeType* data, keyType& key) : key(key), data(data), left(nullptr), right(nullptr), height(1){}
 };
 
 template<class nodeType, class keyType>
@@ -111,7 +112,7 @@ public:
 
     }
 
-    void insert(nodeType& data, keyType key)
+    void insert(nodeType& data, keyType& key)
     {
         if(key > rightLeaf(root)->key || root == nullptr)
             largest_node_ID = data.ID;
@@ -119,7 +120,7 @@ public:
         node_count++;
     }
     
-    node<nodeType, keyType>* insert_recursion(node<nodeType, keyType>* Node, nodeType& data, keyType key)
+    node<nodeType, keyType>* insert_recursion(node<nodeType, keyType>* Node, nodeType& data, keyType& key)
     {
         if(Node == nullptr)
         {
@@ -178,7 +179,7 @@ public:
         return current;
     }
     
-    void remove(keyType key)
+    void remove(keyType& key)
     {
         root = remove_recursion(root, key);
         largest_node_ID = rightLeaf(root)->data->ID;
@@ -186,7 +187,7 @@ public:
     }
     
     
-    node<nodeType, keyType>* remove_recursion(node<nodeType, keyType>* Node, keyType key)
+    node<nodeType, keyType>* remove_recursion(node<nodeType, keyType>* Node, keyType& key)
     {
         if (Node == nullptr)
             throw Failure(); 
@@ -263,12 +264,12 @@ public:
             return Node;
     }
     
-    node<nodeType, keyType>* findNode(keyType key)
+    node<nodeType, keyType>* findNode(keyType& key)
     {
         return findNodeRecursion(root, key);
     }
     
-    node<nodeType, keyType>* findNodeRecursion(node<nodeType, keyType>* Node, keyType key)
+    node<nodeType, keyType>* findNodeRecursion(node<nodeType, keyType>* Node, keyType& key)
     {
         if (Node == nullptr)
             throw Failure();
