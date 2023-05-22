@@ -363,7 +363,8 @@ struct userData
     bool vipStatus;
     int views[5];
     groupData* group;
-    userData(int ID, bool status) : ID(ID), vipStatus(status), views(), group(nullptr) {}
+    int group_watches_before_joining[5];
+    userData(int ID, bool status) : ID(ID), vipStatus(status), views(), group(nullptr), group_watches_before_joining() {}
     ~userData() = default;
 };
 
@@ -374,10 +375,11 @@ struct groupData
     int user_count;
     int VIP_count;
     tree<userData, int> users;
-    int views[5];
+    int group_watches[5]; //this will hold the number of watches as a collective
+    int total_views[5]; //this will hold the number of views taking the size of the group into account
     
-    groupData(int ID) : ID(ID), user_count(0), VIP_count(0), users(), views(){}
-    void add_user(userData data)
+    groupData(int ID) : ID(ID), user_count(0), VIP_count(0), users(), group_watches(), total_views(){}
+    void add_user(userData& data)
     {
         users.insert(data, data.ID);
         user_count++;
@@ -389,10 +391,10 @@ struct groupData
         int max = 0;
         for(int i = 1; i < 5; i++)
         {
-           if(views[i] > views[i-1])
+           if(total_views[i] > total_views[i-1])
                max = i;
         }
-        if(views[max] == 0)
+        if(total_views[max] == 0)
             throw Failure();
         switch(max)
         {

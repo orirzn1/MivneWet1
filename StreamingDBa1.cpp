@@ -117,7 +117,7 @@ StatusType streaming_database::remove_user(int userId)
             (data.group->user_count)--;
             for(int i = 0; i < 5; i++)
             {
-                data.group->views[i] -= data.views[i];
+                data.group->total_views[i] -= (data.group->group_watches[i] - data.group_watches_before_joining[i]);
             }
             if(data.vipStatus)
                 data.group->VIP_count--;
@@ -181,11 +181,15 @@ StatusType streaming_database::add_user_to_group(int userId, int groupId)
         return StatusType::INVALID_INPUT;
     try
     {
-        userData user = *((userTree.findNode(userId))->data);
-        if(user.group != nullptr)
+        userData* user = (userTree.findNode(userId))->data;
+        if(user->group)
             return StatusType::FAILURE;
         groupData* group = (groupTree.findNode(groupId))->data;
-        group->add_user(user);
+        group->add_user(*user);
+        for(int i = 0; i < 5; i++)
+        {
+            user->group_watches_before_joining[i] = group->group_watches[i];
+        }
     }
     catch(Failure& e)
     {
@@ -215,27 +219,42 @@ StatusType streaming_database::user_watch(int userId, int movieId)
             case Genre::COMEDY:
                 user->views[0]++;
                 if(user->group)
-                    user->group->views[0]++;
+                {
+                    user->group->group_watches[0]++;
+                    user->group->total_views[0] += user->group->user_count;
+                }
                 break;
             case Genre::DRAMA:
                 user->views[1]++;
                 if(user->group)
-                    user->group->views[1]++;
+                {
+                    user->group->group_watches[1]++;
+                    user->group->total_views[1] += user->group->user_count;
+                }
                 break;
             case Genre::ACTION:
                 user->views[2]++;
                 if(user->group)
-                    user->group->views[2]++;
+                {
+                    user->group->group_watches[2]++;
+                    user->group->total_views[2] += user->group->user_count;
+                }
                 break;
             case Genre::FANTASY:
                 user->views[3]++;
                 if(user->group)
-                    user->group->views[3]++;
+                {
+                    user->group->group_watches[3]++;
+                    user->group->total_views[3] += user->group->user_count;
+                }
                 break;
             case Genre::NONE:
                 user->views[4]++;
                 if(user->group)
-                    user->group->views[4]++;
+                {
+                    user->group->group_watches[4]++;
+                    user->group->total_views[4] += user->group->user_count;
+                }
                 break;
         }
     }
@@ -265,19 +284,24 @@ StatusType streaming_database::group_watch(int groupId,int movieId)
         switch(movie->genre)
         {
             case Genre::COMEDY:
-                group->views[0] += group->user_count;
+                group->group_watches[0]++;
+                group->total_views[0] += group->user_count;
                 break;
             case Genre::DRAMA:
-                group->views[1] += group->user_count;
+                group->group_watches[1]++;
+                group->total_views[1] += group->user_count;
                 break;
             case Genre::ACTION:
-                group->views[2] += group->user_count;
+                group->group_watches[2]++;
+                group->total_views[2] += group->user_count;
                 break;
             case Genre::FANTASY:
-                group->views[3] += group->user_count;
+                group->group_watches[3]++;
+                group->total_views[3] += group->user_count;
                 break;
             case Genre::NONE:
-                group->views[4] += group->user_count;
+                group->group_watches[4]++;
+                group->total_views[4] += group->user_count;
                 break;
         }
     }
