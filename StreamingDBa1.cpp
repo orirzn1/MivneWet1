@@ -169,8 +169,10 @@ StatusType streaming_database::add_user_to_group(int userId, int groupId)
         return StatusType::INVALID_INPUT;
     try
     {
-        groupData* group = (groupTree.findNode(groupId))->data;
         userData user = *((userTree.findNode(userId))->data);
+        if(user.group != nullptr)
+            return StatusType::FAILURE;
+        groupData* group = (groupTree.findNode(groupId))->data;
         group->add_user(user);
     }
     catch(Failure& e)
