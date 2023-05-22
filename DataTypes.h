@@ -19,7 +19,7 @@ class Failure : public std::exception
 public:
     const char * what() const throw ()
     {
-        return "ID already exists";
+        return "FAILURE";
     }
 };
 template<class nodeType, class keyType>
