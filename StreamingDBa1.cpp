@@ -111,6 +111,18 @@ StatusType streaming_database::remove_user(int userId)
         return StatusType::INVALID_INPUT;
     try
     {
+        userData data = *(userTree.findNode(userId)->data);
+        if(data.group)
+        {
+            (data.group->user_count)--;
+            for(int i = 0; i < 5; i++)
+            {
+                data.group->views[i] -= data.views[i];
+            }
+            if(data.vipStatus)
+                data.group->VIP_count--;
+        }
+        data.group->users.remove(userId);
         userTree.remove(userId);
     }
     catch(std::bad_alloc& e)
@@ -202,27 +214,27 @@ StatusType streaming_database::user_watch(int userId, int movieId)
         {
             case Genre::COMEDY:
                 user->views[0]++;
-                if(user->group != nullptr)
+                if(user->group)
                     user->group->views[0]++;
                 break;
             case Genre::DRAMA:
                 user->views[1]++;
-                if(user->group != nullptr)
+                if(user->group)
                     user->group->views[1]++;
                 break;
             case Genre::ACTION:
                 user->views[2]++;
-                if(user->group != nullptr)
+                if(user->group)
                     user->group->views[2]++;
                 break;
             case Genre::FANTASY:
                 user->views[3]++;
-                if(user->group != nullptr)
+                if(user->group)
                     user->group->views[3]++;
                 break;
             case Genre::NONE:
                 user->views[4]++;
-                if(user->group != nullptr)
+                if(user->group)
                     user->group->views[4]++;
                 break;
         }
@@ -247,25 +259,25 @@ StatusType streaming_database::group_watch(int groupId,int movieId)
     {
         movieData* movie = (movieTree.findNode(movieId))->data;
         groupData* group = (groupTree.findNode(groupId))->data;
-        if((movie->vipOnly && !(group->VIP)) || (group->user_count == 0))
+        if((movie->vipOnly && (group->VIP_count == 0)) || (group->user_count == 0))
             return StatusType::FAILURE;
         movie->views += group->user_count;
         switch(movie->genre)
         {
             case Genre::COMEDY:
-                group->views[0]++;
+                group->views[0] += group->user_count;
                 break;
             case Genre::DRAMA:
-                group->views[1]++;
+                group->views[1] += group->user_count;
                 break;
             case Genre::ACTION:
-                group->views[2]++;
+                group->views[2] += group->user_count;
                 break;
             case Genre::FANTASY:
-                group->views[3]++;
+                group->views[3] += group->user_count;
                 break;
             case Genre::NONE:
-                group->views[4]++;
+                group->views[4] += group->user_count;
                 break;
         }
     }

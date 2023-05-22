@@ -372,17 +372,17 @@ struct groupData
 {
     int ID;
     int user_count;
-    bool VIP;
+    int VIP_count;
     tree<userData, int> users;
     int views[5];
     
-    groupData(int ID) : ID(ID), user_count(0), VIP(false), users(), views(){}
+    groupData(int ID) : ID(ID), user_count(0), VIP_count(0), users(), views(){}
     void add_user(userData data)
     {
         users.insert(data, data.ID);
         user_count++;
         if(data.vipStatus == true)
-            VIP = true; 
+            VIP_count++; 
     }
     Genre findFavoriteGenre()
     {
