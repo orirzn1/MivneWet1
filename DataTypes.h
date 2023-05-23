@@ -32,6 +32,16 @@ struct node
     node* right;
     int height;
     node(nodeType* data, keyType& key) : key(key), data(data), left(nullptr), right(nullptr), height(1){}
+    /*node& operator=(const node& other){
+        key = other.key;
+        delete data;
+        data = other.data;
+        left = other.left;
+        right = other.right;
+        height = other.height;
+
+        return *this;
+    }*/
 };
 
 template<class nodeType, class keyType>
@@ -41,14 +51,23 @@ private:
     
     int largest_node_ID;
     int node_count;
+    node<nodeType, keyType>* root;
     
 public:
-    node<nodeType, keyType>* root;
     tree() : root(nullptr), largest_node_ID(0), node_count(0) {}
     ~tree()
     {
         destroyTree(root);
     }
+    
+    /*tree& operator = (const tree& other)
+    {
+        largest_node_ID = other.largest_node_ID;
+        node_count = other.node_count;
+        root = other.root;
+        
+        return *this; 
+    }*/
     
     void destroyTree(node<nodeType, keyType>* N)
     {
@@ -193,7 +212,10 @@ public:
     void remove(keyType& key)
     {
         root = remove_recursion(root, key);
-        largest_node_ID = rightLeaf(root)->data->ID;
+        if(rightLeaf(root))
+        {
+            largest_node_ID = rightLeaf(root)->data->ID;
+        }
         node_count--;
     }
     
@@ -233,6 +255,7 @@ public:
      
                 // Copy data
                 Node->key = temp->key;
+                Node->data = temp->data;
      
                 // Delete smallest in right subtree
                 Node->right = remove_recursion(Node->right,temp->key);
@@ -393,6 +416,21 @@ struct groupData
     int total_views[5]; //this will hold the number of views taking the size of the group into account
     
     groupData(int ID) : ID(ID), user_count(0), VIP_count(0), users(), group_watches(), total_views(){}
+    
+   /* groupData& operator=(const groupData& other){
+        ID = other.ID;
+        user_count = other.user_count;
+        VIP_count = other.VIP_count;
+        for (int i = 0; i < 5; i++)
+            group_watches[i] = other.group_watches[i];
+        for (int i = 0; i < 5; i++)
+            total_views[i] = other.total_views[i];
+        users = other.users;
+        return *this;
+
+        
+    }*/
+    
     void add_user(userData* data)
     {
         users.insert(data, data->ID);
