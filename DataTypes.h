@@ -114,7 +114,7 @@ public:
 
     void insert(nodeType& data, keyType& key)
     {
-        if(key > rightLeaf(root)->key || root == nullptr)
+        if(root == nullptr || key > rightLeaf(root)->key)
             largest_node_ID = data.ID;
         root = insert_recursion(root, data, key);
         node_count++;
@@ -165,6 +165,8 @@ public:
     
     node<nodeType, keyType>* leftLeaf(node<nodeType, keyType>* Node)
     {
+        if (Node == nullptr)
+            return nullptr;
         node<nodeType, keyType>* current = Node;
         while (current->left != nullptr)
             current = current->left;
@@ -173,6 +175,8 @@ public:
     
     node<nodeType, keyType>* rightLeaf(node<nodeType, keyType>* Node)
     {
+        if (Node == nullptr)
+            return nullptr;
         node<nodeType, keyType>* current = Node;
         while (current->right != nullptr)
             current = current->right;
@@ -212,7 +216,7 @@ public:
                 }
                 else // One child case
                     *Node = *temp;
-                free(temp);
+                delete temp;
             }
             else
             {

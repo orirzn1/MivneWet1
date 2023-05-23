@@ -332,7 +332,7 @@ output_t<int> streaming_database::get_all_movies_count(Genre genre)
         case Genre::FANTASY:
             return output_t<int>(fantasyTree.getCount());
             break;
-        case Genre::NONE:
+        default:
             return output_t<int>(noneTree.getCount());
             break;
     }
@@ -357,7 +357,7 @@ StatusType streaming_database::get_all_movies(Genre genre, int *const output)
         case Genre::FANTASY:
             return fantasyTree.insertDescendingOrder(output);
             break;
-        case Genre::NONE:
+        default:
             return noneTree.insertDescendingOrder(output);
             break;
     }
@@ -384,7 +384,7 @@ output_t<int> streaming_database::get_num_views(int userId, Genre genre)
             case Genre::FANTASY:
                 return output_t<int>(user->views[3]);
                 break;
-            case Genre::NONE:
+            default:
                 return output_t<int>(user->views[4]);
                 break;
         }
@@ -484,7 +484,7 @@ output_t<int> streaming_database::get_group_recommendation(int groupId)
                     return output_t<int>(movieID);
                 return output_t<int>(StatusType::FAILURE);
                 break;
-            case Genre::NONE:
+            default:
                 movieID = noneTree.getLargestNodeID();
                 if(movieID != 0)
                     return output_t<int>(movieID);
