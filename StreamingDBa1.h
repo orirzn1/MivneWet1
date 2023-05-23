@@ -17,9 +17,10 @@
 
 #include "wet1util.h"
 #include "DataTypes.h"
+#include <memory>
 
 class streaming_database {
-private:
+public:
     tree<movieData, int> movieTree;
     tree<userData, int> userTree;
     tree<groupData, int> groupTree;

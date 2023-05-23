@@ -38,11 +38,12 @@ template<class nodeType, class keyType>
 class tree
 {
 private:
-    node<nodeType, keyType>* root;
+    
     int largest_node_ID;
     int node_count;
     
 public:
+    node<nodeType, keyType>* root;
     tree() : root(nullptr), largest_node_ID(0), node_count(0) {}
     ~tree()
     {
@@ -55,6 +56,8 @@ public:
         {
             destroyTree(N->right);
             destroyTree(N->left);
+            //if(N->data)
+                //delete N->data;
             delete N; 
         }
         N = nullptr;
@@ -114,11 +117,11 @@ public:
 
     }
 
-    void insert(nodeType& data, keyType& key)
+    void insert(nodeType* data, keyType& key)
     {
         if(root == nullptr || key > rightLeaf(root)->key)
-            largest_node_ID = data.ID;
-        root = insert_recursion(root, data, key);
+            largest_node_ID = data->ID;
+        root = insert_recursion(root, *data, key);
         node_count++;
     }
     
@@ -126,7 +129,8 @@ public:
     {
         if(Node == nullptr)
         {
-            return new node<nodeType, keyType>(&data, key);
+            node<nodeType, keyType>* new_node =  new node<nodeType, keyType>(&data, key);
+            return new_node;
         }
         if (key < Node->key)
             Node->left = insert_recursion(Node->left, data, key);
@@ -136,6 +140,7 @@ public:
         {
             throw Failure();
         }
+
         // Update parent node's height
         Node->height = 1 + max(height(Node->left), height(Node->right));
         // Get balance of parent
@@ -218,6 +223,7 @@ public:
                 }
                 else // One child case
                     *Node = *temp;
+                delete temp->data;
                 delete temp;
             }
             else
@@ -277,6 +283,7 @@ public:
     
     node<nodeType, keyType>* findNodeRecursion(node<nodeType, keyType>* Node, keyType& key)
     {
+  
         if (Node == nullptr)
             throw Failure();
         if (key < Node->key)
@@ -285,6 +292,7 @@ public:
             return findNodeRecursion(Node->right, key); 
         else
         {
+
             return Node;
         }
     }
@@ -326,7 +334,7 @@ private:
             std::cout << "    ";
 
         // Print current node's ID
-        std::cout << Node->data.ID << std::endl;
+        std::cout << Node->data->ID << std::endl;
 
         // Print left subtree
         printTree(Node->left, level + 1);
@@ -385,11 +393,11 @@ struct groupData
     int total_views[5]; //this will hold the number of views taking the size of the group into account
     
     groupData(int ID) : ID(ID), user_count(0), VIP_count(0), users(), group_watches(), total_views(){}
-    void add_user(userData& data)
+    void add_user(userData* data)
     {
-        users.insert(data, data.ID);
+        users.insert(data, data->ID);
         user_count++;
-        if(data.vipStatus == true)
+        if(data->vipStatus == true)
             VIP_count++; 
     }
     Genre findFavoriteGenre()
