@@ -57,12 +57,14 @@ public:
             destroyTree(N->left);
             delete N; 
         }
+        N = nullptr;
     }
     
     int getLargestNodeID()
     {
         return largest_node_ID;
     }
+    
     int height(node<nodeType, keyType>* N)
     {
         if (N == nullptr)
@@ -126,9 +128,9 @@ public:
         {
             return new node<nodeType, keyType>(&data, key);
         }
-        if (data.ID < Node->data->ID)
+        if (key < Node->key)
             Node->left = insert_recursion(Node->left, data, key);
-        else if (data.ID > Node->data->ID)
+        else if (key > Node->key)
             Node->right = insert_recursion(Node->right, data, key);
         else
         {
@@ -140,21 +142,21 @@ public:
         int balance = getBalance(Node);
         // Check if parent is unbalanced and split into LL, RR, LR, RL rotation cases
         // LL
-        if (balance > 1 && data.ID < Node->left->data->ID)
+        if (balance > 1 && key < Node->left->key)
             return rightRotate(Node);
         // RR
-        if (balance < -1 && data.ID > Node->right->data->ID)
+        if (balance < -1 && key > Node->right->key)
             return leftRotate(Node);
      
         // LR
-        if (balance > 1 && data.ID > Node->left->data->ID)
+        if (balance > 1 && key > Node->left->key)
         {
             Node->left = leftRotate(Node->left);
             return rightRotate(Node);
         }
      
         // RL
-        if (balance < -1 && data.ID < Node->right->data->ID)
+        if (balance < -1 && key < Node->right->key)
         {
             Node->right = rightRotate(Node->right);
             return leftRotate(Node);
