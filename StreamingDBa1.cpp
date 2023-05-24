@@ -21,23 +21,18 @@ StatusType streaming_database::add_movie(int movieId, Genre genre, int views, bo
         {
             case Genre::COMEDY:
                 comedyTree.insert(data, *data);
-                comedyTree.printTree();
                 break;
             case Genre::DRAMA:
                 dramaTree.insert(data, *data);
-                dramaTree.printTree();
                 break;
             case Genre::ACTION:
                 actionTree.insert(data, *data);
-                actionTree.printTree();
                 break;
             case Genre::FANTASY:
                 fantasyTree.insert(data, *data);
-                fantasyTree.printTree();
                 break;
             case Genre::NONE:
                 noneTree.insert(data, *data);
-                noneTree.printTree(); 
                 break;
         }
             
@@ -55,8 +50,6 @@ StatusType streaming_database::add_movie(int movieId, Genre genre, int views, bo
 
 StatusType streaming_database::remove_movie(int movieId)
 {
-    std::cout << "movieTree before: " << std::endl;
-    movieTree.printTree();
     if(movieId <= 0)
         return StatusType::INVALID_INPUT;
     try
@@ -81,11 +74,7 @@ StatusType streaming_database::remove_movie(int movieId)
                 noneTree.rearrange(data);
                 break;
         }
-        movieTree.remove(movieId);
-        std::cout << "movieTree after remove:" << std::endl;
-        movieTree.printTree();
-        std::cout << "comedyTree after remove:" << std::endl;
-        comedyTree.printTree();
+        movieTree.remove(movieId, false);
     }
     catch(std::bad_alloc& e)
     {
@@ -107,7 +96,6 @@ StatusType streaming_database::add_user(int userId, bool isVip)
     try
     {
         userTree.insert(data, userId);
-        userTree.printTree();
     }
     catch(std::bad_alloc& e)
     {
@@ -138,11 +126,7 @@ StatusType streaming_database::remove_user(int userId)
                 data.group->VIP_count--;
             data.group->users.rearrange(userId);
         }
-        userTree.remove(userId);
-        std::cout << "userTree after remove:" << std::endl;
-        userTree.printTree();
-        std::cout << "groupTree after remove:" << std::endl;
-        data.group->users.printTree(); 
+        userTree.remove(userId, false);
     }
     catch(std::bad_alloc& e)
     {
@@ -165,7 +149,6 @@ StatusType streaming_database::add_group(int groupId)
     try
     {
         groupTree.insert(data, groupId);
-        groupTree.printTree();
     }
     catch(std::bad_alloc& e)
     {
@@ -186,7 +169,7 @@ StatusType streaming_database::remove_group(int groupId)
     {
         groupData* group = groupTree.findNode(groupId)->data;
         groupTree.removeAllUsers(group->users.getRoot()); 
-        groupTree.remove(groupId);
+        groupTree.remove(groupId, false);
     }
     catch(std::bad_alloc& e)
     {
@@ -217,7 +200,6 @@ StatusType streaming_database::add_user_to_group(int userId, int groupId)
             user->group_watches_before_joining[i] = group->group_watches[i];
         }
         user->group = group;
-        group->users.printTree(); 
     }
     catch(Failure& e)
     {
@@ -440,27 +422,27 @@ StatusType streaming_database::rate_movie(int userId, int movieId, int rating)
         switch(movie->genre)
         {
             case Genre::COMEDY:
-                comedyTree.remove(*movie);
+                comedyTree.remove(*movie, false);
                 movie->rating = (movie->rating + rating)/(++movie->num_of_ratings);
                 comedyTree.insert(movie, *movie);
                 break;
             case Genre::DRAMA:
-                dramaTree.remove(*movie);
+                dramaTree.remove(*movie, false);
                 movie->rating = (movie->rating + rating)/(++movie->num_of_ratings);
                 dramaTree.insert(movie, *movie);
                 break;
             case Genre::ACTION:
-                actionTree.remove(*movie);
+                actionTree.remove(*movie, false);
                 movie->rating = (movie->rating + rating)/(++movie->num_of_ratings);
                 actionTree.insert(movie, *movie);
                 break;
             case Genre::FANTASY:
-                fantasyTree.remove(*movie);
+                fantasyTree.remove(*movie, false);
                 movie->rating = (movie->rating + rating)/(++movie->num_of_ratings);
                 fantasyTree.insert(movie, *movie);
                 break;
             case Genre::NONE:
-                noneTree.remove(*movie);
+                noneTree.remove(*movie, false);
                 movie->rating = (movie->rating + rating)/(++movie->num_of_ratings);
                 noneTree.insert(movie, *movie);
                 break;

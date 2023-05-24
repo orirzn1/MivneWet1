@@ -210,98 +210,28 @@ public:
     
     void rearrange(keyType& key)
     {
-        root = rearrange_recursion(root, key);
-        if(rightLeaf(root))
-        {
-            largest_node_ID = rightLeaf(root)->data->ID;
-        }
-        node_count--;
+        remove(key, true); 
     }
     
-    node<nodeType, keyType>* rearrange_recursion(node<nodeType, keyType>* Node, keyType& key)
+    bool contains(keyType& key)
     {
-        if (Node == nullptr)
+        node<nodeType, keyType>* current = root;
+        while(current) {
+            if (!(key>current->key) && !(key<current->key))
+                return true;
+            else if (key < current->key)
+                current = current->left;
+            else
+                current = current->right;
+        }
+        return false;
+    }
+    
+    void remove(keyType& key, bool no_delete)
+    {
+        if(!contains(key))
             throw Failure();
-        if (key < Node->key)
-            Node->left = rearrange_recursion(Node->left, key);
-        else if(key > Node->key)
-            Node->right = rearrange_recursion(Node->right, key);
-        else
-        {
-            if((Node->left == nullptr) || (Node->right == nullptr))
-            {
-                node<nodeType, keyType> *temp;
-                if (Node->left)
-                    temp = Node->left;
-                else
-                    temp = Node->right;
-                // No child case
-                if (temp == nullptr) {
-                    Node = nullptr;
-                    std::cout << "case 1"<< std::endl;
-                } else {// One child case
-                    std::cout << "case 2"<< std::endl;
-                    Node = temp;
-                }
-            }
-            else
-            {
-                // node with two children: Get smallest in the right subtree
-                node<nodeType, keyType>* temp = leftLeaf(Node->right);
-
-                // Copy data
-                Node->data = new nodeType(*(temp->data));
-                Node->key = temp->key;
-
-                // Delete smallest in right subtree
-                if(Node->right != nullptr)
-                    Node->right = remove_recursion(Node->right,temp->key);
-
-            }
-        }
-            if (Node == nullptr)
-            return Node;
-        
-            Node->height = 1 + max(height(Node->left), height(Node->right));
-
-            int balance = getBalance(Node);
-         
-            //Check balance
-         
-            // LL
-            if (balance > 1 &&
-                getBalance(Node->left) >= 0)
-                return rightRotate(Node);
-         
-            // LR
-            if (balance > 1 &&
-                getBalance(Node->left) < 0)
-            {
-                Node->left = leftRotate(Node->left);
-                return rightRotate(Node);
-            }
-         
-            // RR
-            if (balance < -1 &&
-                getBalance(Node->right) <= 0)
-                return leftRotate(Node);
-         
-            // RL
-            if (balance < -1 &&
-                getBalance(Node->right) > 0)
-            {
-                Node->right = rightRotate(Node->right);
-                return leftRotate(Node);
-            }
-         
-            return Node;
-    }
-    
-    
-    
-    void remove(keyType& key)
-    {
-        root = remove_recursion(root, key);
+        root = remove_recursion(root, key, no_delete);
         if(rightLeaf(root))
         {
             largest_node_ID = rightLeaf(root)->data->ID;
@@ -309,92 +239,92 @@ public:
         node_count--;
     }
     
-    
-    node<nodeType, keyType>* remove_recursion(node<nodeType, keyType>* Node, keyType& key)
+    node<nodeType,keyType>* balance(node<nodeType,keyType>* Node)
     {
-        if (Node == nullptr)
-            throw Failure(); 
-        if (key < Node->key)
-            Node->left = remove_recursion(Node->left, key);
-        else if(key > Node->key)
-            Node->right = remove_recursion(Node->right, key);
-        else
-        {
-            if((Node->left == nullptr) || (Node->right == nullptr))
-            {
-                node<nodeType, keyType> *temp;
-                if (Node->left)
-                    temp = Node->left;
-                else
-                    temp = Node->right;
-                // No child case
-                if (temp == nullptr) {
-                    std::cout << "case 1"<< std::endl;
-                    temp = Node;
-                    Node = nullptr;
-                    delete temp->data;
-                    delete temp;
-                } else {// One child case
-                    std::cout << "case 2"<< std::endl;
-                    node<nodeType, keyType> *old_ptr = Node;
-                    Node = temp;
-                    delete old_ptr->data;
-                    delete old_ptr;
+        Node->height = 1 + max(height(Node->left), height(Node->right));
 
-                }
+        int balance = getBalance(Node);
+
+        //Check balance
+
+        // LL
+        if (balance > 1 &&
+           getBalance(Node->left) >= 0)
+           return rightRotate(Node);
+
+        // LR
+        if (balance > 1 &&
+           getBalance(Node->left) < 0)
+        {
+           Node->left = leftRotate(Node->left);
+           return rightRotate(Node);
+        }
+
+        // RR
+        if (balance < -1 &&
+           getBalance(Node->right) <= 0)
+           return leftRotate(Node);
+
+        // RL
+        if (balance < -1 &&
+           getBalance(Node->right) > 0)
+        {
+           Node->right = rightRotate(Node->right);
+           return leftRotate(Node);
+        }
+
+        return Node;
+    }
+    
+    node<nodeType,keyType>* findMin(node<nodeType,keyType>* Node)
+    {
+        return Node->left ? findMin(Node->left) : Node;
+    }
+    
+    node<nodeType,keyType>* getMinNodeRightChild(node<nodeType,keyType>* Node) {
+      if (!Node->left) {
+          return Node->right;
+      }
+      Node->left = getMinNodeRightChild(Node->left);
+      return balance(Node);
+    }
+    
+    node<nodeType, keyType>* remove_recursion(node<nodeType, keyType>* Node, keyType& key, bool no_delete)
+    {
+        try {
+            if (Node == nullptr)
+            {
+                return nullptr;
+            }
+            if (key < Node->key)
+            {
+                Node->left = remove_recursion(Node->left, key, no_delete);
+            }
+            else if (key > Node->key)
+            {
+                Node->right = remove_recursion(Node->right, key, no_delete);
             }
             else
             {
-                // node with two children: Get smallest in the right subtree
-                node<nodeType, keyType>* temp = leftLeaf(Node->right);
-
-                // Copy data
-                delete Node->data;  // Delete the old node's data
-                Node->data = new nodeType(*(temp->data));
-                Node->key = temp->key;
-
-                // Delete smallest in right subtree
-                if(Node->right != nullptr)
-                    Node->right = remove_recursion(Node->right,temp->key);
-
+                //currentNode is the node with the given key that we want to delete
+                node<nodeType,keyType>* leftChild = Node->left;
+                node<nodeType,keyType>* rightChild = Node->right;
+                if(!no_delete)
+                    delete Node;
+                if (!rightChild) {
+                    return leftChild;
+                }
+                node<nodeType,keyType>* minNode = findMin(rightChild);
+                minNode->right = getMinNodeRightChild(rightChild);
+                minNode->left = leftChild;
+                
+                return balance(minNode);
             }
+            return balance(Node);
         }
-            if (Node == nullptr)
-            return Node;
-        
-            Node->height = 1 + max(height(Node->left), height(Node->right));
-
-            int balance = getBalance(Node);
-         
-            //Check balance
-         
-            // LL
-            if (balance > 1 &&
-                getBalance(Node->left) >= 0)
-                return rightRotate(Node);
-         
-            // LR
-            if (balance > 1 &&
-                getBalance(Node->left) < 0)
-            {
-                Node->left = leftRotate(Node->left);
-                return rightRotate(Node);
-            }
-         
-            // RR
-            if (balance < -1 &&
-                getBalance(Node->right) <= 0)
-                return leftRotate(Node);
-         
-            // RL
-            if (balance < -1 &&
-                getBalance(Node->right) > 0)
-            {
-                Node->right = rightRotate(Node->right);
-                return leftRotate(Node);
-            }
-         
-            return Node;
+        catch (...) {
+            throw;
+        }
     }
     
     node<nodeType, keyType>* findNode(const keyType& key)
@@ -418,12 +348,6 @@ public:
         }
     }
 
-    //remember to delete
-    void printTree() const
-    {
-        printTree(root, 0);
-    }
-    
     StatusType insertDescendingOrder(int *const output)
     {
         if(this->node_count == 0)
@@ -440,25 +364,6 @@ public:
         output[index] = node->data->ID;
         index++;
         insertDescendingOrderRecursion(output, node->left, index);
-    }
-
-private:
-    void printTree(node<nodeType, keyType>* Node, int level) const {
-        if (Node == nullptr)
-            return;
-
-        // Print right subtree
-        printTree(Node->right, level + 1);
-
-        // Indentation based on the level
-        for (int i = 0; i < level; ++i)
-            std::cout << "    ";
-
-        // Print current node's ID
-        std::cout << Node->data->ID << std::endl;
-
-        // Print left subtree
-        printTree(Node->left, level + 1);
     }
 };
 
@@ -521,20 +426,6 @@ struct groupData
     int total_views[5]; //this will hold the number of views taking the size of the group into account
     
     groupData(int ID) : ID(ID), user_count(0), VIP_count(0), users(), group_watches(), total_views(){}
-    
-   /* groupData& operator=(const groupData& other){
-        ID = other.ID;
-        user_count = other.user_count;
-        VIP_count = other.VIP_count;
-        for (int i = 0; i < 5; i++)
-            group_watches[i] = other.group_watches[i];
-        for (int i = 0; i < 5; i++)
-            total_views[i] = other.total_views[i];
-        users = other.users;
-        return *this;
-
-        
-    }*/
     
     void add_user(userData* data)
     {
