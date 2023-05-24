@@ -21,18 +21,23 @@ StatusType streaming_database::add_movie(int movieId, Genre genre, int views, bo
         {
             case Genre::COMEDY:
                 comedyTree.insert(data, *data);
+                comedyTree.printTree();
                 break;
             case Genre::DRAMA:
                 dramaTree.insert(data, *data);
+                dramaTree.printTree();
                 break;
             case Genre::ACTION:
                 actionTree.insert(data, *data);
+                actionTree.printTree();
                 break;
             case Genre::FANTASY:
                 fantasyTree.insert(data, *data);
+                fantasyTree.printTree();
                 break;
             case Genre::NONE:
                 noneTree.insert(data, *data);
+                noneTree.printTree(); 
                 break;
         }
             
@@ -50,31 +55,37 @@ StatusType streaming_database::add_movie(int movieId, Genre genre, int views, bo
 
 StatusType streaming_database::remove_movie(int movieId)
 {
+    std::cout << "movieTree before: " << std::endl;
+    movieTree.printTree();
     if(movieId <= 0)
         return StatusType::INVALID_INPUT;
     try
     {
         movieData data = *(movieTree.findNode(movieId)->data);
-        movieTree.remove(movieId);
         Genre genre = data.genre;
         switch(genre)
         {
             case Genre::COMEDY:
-                comedyTree.remove(data);
+                comedyTree.rearrange(data);
                 break;
             case Genre::DRAMA:
-                dramaTree.remove(data);
+                dramaTree.rearrange(data);
                 break;
             case Genre::ACTION:
-                actionTree.remove(data);
+                actionTree.rearrange(data);
                 break;
             case Genre::FANTASY:
-                fantasyTree.remove(data);
+                fantasyTree.rearrange(data);
                 break;
             case Genre::NONE:
-                noneTree.remove(data);
+                noneTree.rearrange(data);
                 break;
         }
+        movieTree.remove(movieId);
+        std::cout << "movieTree after remove:" << std::endl;
+        movieTree.printTree();
+        std::cout << "comedyTree after remove:" << std::endl;
+        comedyTree.printTree();
     }
     catch(std::bad_alloc& e)
     {
@@ -125,10 +136,13 @@ StatusType streaming_database::remove_user(int userId)
             }
             if(data.vipStatus)
                 data.group->VIP_count--;
-            data.group->users.remove(userId);
+            data.group->users.rearrange(userId);
         }
         userTree.remove(userId);
+        std::cout << "userTree after remove:" << std::endl;
         userTree.printTree();
+        std::cout << "groupTree after remove:" << std::endl;
+        data.group->users.printTree(); 
     }
     catch(std::bad_alloc& e)
     {

@@ -208,6 +208,95 @@ public:
         return current;
     }
     
+    void rearrange(keyType& key)
+    {
+        root = rearrange_recursion(root, key);
+        if(rightLeaf(root))
+        {
+            largest_node_ID = rightLeaf(root)->data->ID;
+        }
+        node_count--;
+    }
+    
+    node<nodeType, keyType>* rearrange_recursion(node<nodeType, keyType>* Node, keyType& key)
+    {
+        if (Node == nullptr)
+            throw Failure();
+        if (key < Node->key)
+            Node->left = rearrange_recursion(Node->left, key);
+        else if(key > Node->key)
+            Node->right = rearrange_recursion(Node->right, key);
+        else
+        {
+            if((Node->left == nullptr) || (Node->right == nullptr))
+            {
+                node<nodeType, keyType> *temp;
+                if (Node->left)
+                    temp = Node->left;
+                else
+                    temp = Node->right;
+                // No child case
+                if (temp == nullptr) {
+                    Node = nullptr;
+                    std::cout << "case 1"<< std::endl;
+                } else {// One child case
+                    std::cout << "case 2"<< std::endl;
+                    Node = temp;
+                }
+            }
+            else
+            {
+                // node with two children: Get smallest in the right subtree
+                node<nodeType, keyType>* temp = leftLeaf(Node->right);
+     
+                // Copy data
+                Node->key = temp->key;
+                Node->data = temp->data;
+     
+                // Delete smallest in right subtree
+                Node->right = rearrange_recursion(Node->right,temp->key);
+            }
+        }
+            if (Node == nullptr)
+            return Node;
+        
+            Node->height = 1 + max(height(Node->left), height(Node->right));
+
+            int balance = getBalance(Node);
+         
+            //Check balance
+         
+            // LL
+            if (balance > 1 &&
+                getBalance(Node->left) >= 0)
+                return rightRotate(Node);
+         
+            // LR
+            if (balance > 1 &&
+                getBalance(Node->left) < 0)
+            {
+                Node->left = leftRotate(Node->left);
+                return rightRotate(Node);
+            }
+         
+            // RR
+            if (balance < -1 &&
+                getBalance(Node->right) <= 0)
+                return leftRotate(Node);
+         
+            // RL
+            if (balance < -1 &&
+                getBalance(Node->right) > 0)
+            {
+                Node->right = rightRotate(Node->right);
+                return leftRotate(Node);
+            }
+         
+            return Node;
+    }
+    
+    
+    
     void remove(keyType& key)
     {
         root = remove_recursion(root, key);
@@ -229,7 +318,8 @@ public:
             Node->right = remove_recursion(Node->right, key);
         else
         {
-            if((Node->left == nullptr) || (Node->right == nullptr)) {
+            if((Node->left == nullptr) || (Node->right == nullptr))
+            {
                 node<nodeType, keyType> *temp;
                 if (Node->left)
                     temp = Node->left;
@@ -250,6 +340,7 @@ public:
                     delete old_ptr;
 
                 }
+            }
             else
             {
                 // node with two children: Get smallest in the right subtree
@@ -301,12 +392,12 @@ public:
             return Node;
     }
     
-    node<nodeType, keyType>* findNode(keyType& key)
+    node<nodeType, keyType>* findNode(const keyType& key)
     {
         return findNodeRecursion(root, key);
     }
     
-    node<nodeType, keyType>* findNodeRecursion(node<nodeType, keyType>* Node, keyType& key)
+    node<nodeType, keyType>* findNodeRecursion(node<nodeType, keyType>* Node, const keyType& key)
     {
   
         if (Node == nullptr)
@@ -390,7 +481,14 @@ struct movieData
     }
     bool operator > (const movieData& other)
     {
-        return !(*this < other);
+        if(rating > other.rating)
+            return true;
+        if(rating == other.rating && views > other.views)
+            return true;
+        if(rating == other.rating && views == other.views && ID < other.ID)
+            return true;
+        
+        return false;
     }
 };
 
