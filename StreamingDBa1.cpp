@@ -1,6 +1,6 @@
 #include "StreamingDBa1.h"
 
-streaming_database::streaming_database() : movieTree(), userTree(), groupTree(), comedyTree(), dramaTree(), actionTree(), fantasyTree(), noneTree(){
+streaming_database::streaming_database() : movieTree(), movieByRating(), userTree(), groupTree(), comedyTree(), dramaTree(), actionTree(), fantasyTree(), noneTree(){
 }
 
 streaming_database::~streaming_database(){
@@ -12,11 +12,12 @@ StatusType streaming_database::add_movie(int movieId, Genre genre, int views, bo
     if(genre == Genre::NONE || movieId <= 0 || views < 0)
         return StatusType::INVALID_INPUT;
     
-    movieData* data = new movieData(movieId, genre, views, vipOnly);
+    std::shared_ptr<movieData> data = std::make_shared<movieData>(movieId, genre, views, vipOnly);
     
     try
     {
         movieTree.insert(data, movieId);
+        movieByRating.insert(data, *data);
         switch(genre)
         {
             case Genre::COMEDY:
@@ -54,7 +55,7 @@ StatusType streaming_database::remove_movie(int movieId)
         return StatusType::INVALID_INPUT;
     try
     {
-        movieData data = *(movieTree.findNode(movieId)->data);
+        movieData data = *(movieTree.findNode(movieId)->data.get());
         Genre genre = data.genre;
         switch(genre)
         {
@@ -74,6 +75,7 @@ StatusType streaming_database::remove_movie(int movieId)
                 noneTree.rearrange(data);
                 break;
         }
+        movieByRating.rearrange(data);
         movieTree.remove(movieId, false);
     }
     catch(std::bad_alloc& e)
@@ -92,7 +94,7 @@ StatusType streaming_database::add_user(int userId, bool isVip)
     if(userId <= 0)
         return StatusType::INVALID_INPUT;
     
-    userData* data = new userData(userId, isVip);
+    std::shared_ptr<userData> data = std::make_shared<userData>(userId, isVip);
     try
     {
         userTree.insert(data, userId);
@@ -114,7 +116,8 @@ StatusType streaming_database::remove_user(int userId)
         return StatusType::INVALID_INPUT;
     try
     {
-        userData data = *(userTree.findNode(userId)->data);
+        userData data = *(userTree.findNode(userId)->data.get());
+
         if(data.group)
         {
             (data.group->user_count)--;
@@ -144,7 +147,7 @@ StatusType streaming_database::add_group(int groupId)
     if(groupId <= 0)
         return StatusType::INVALID_INPUT;
 
-    groupData* data = new groupData(groupId);
+    std::shared_ptr<groupData> data = std::make_shared<groupData>(groupId);
     
     try
     {
@@ -167,8 +170,8 @@ StatusType streaming_database::remove_group(int groupId)
         return StatusType::INVALID_INPUT;
     try
     {
-        groupData* group = groupTree.findNode(groupId)->data;
-        groupTree.removeAllUsers(group->users.getRoot()); 
+        groupData* group = (groupTree.findNode(groupId)->data.get());
+        groupTree.removeAllUsers(group->users.getRoot());
         groupTree.remove(groupId, false);
     }
     catch(std::bad_alloc& e)
@@ -188,13 +191,13 @@ StatusType streaming_database::add_user_to_group(int userId, int groupId)
         return StatusType::INVALID_INPUT;
     try
     {
-        userData* user = (userTree.findNode(userId))->data;
+        userData* user = (userTree.findNode(userId)->data.get());
         if(user->group != nullptr)
         {
             return StatusType::FAILURE;
         }
-        groupData* group = (groupTree.findNode(groupId))->data;
-        group->add_user(user);
+        groupData* group = (groupTree.findNode(groupId)->data.get());
+        group->add_user((userTree.findNode(userId)->data));
         for(int i = 0; i < 5; i++)
         {
             user->group_watches_before_joining[i] = group->group_watches[i];
@@ -219,8 +222,8 @@ StatusType streaming_database::user_watch(int userId, int movieId)
         return StatusType::INVALID_INPUT;
     try
     {
-        movieData* movie = (movieTree.findNode(movieId))->data;
-        userData* user = (userTree.findNode(userId))->data;
+        movieData* movie = (movieTree.findNode(movieId)->data.get());
+        userData* user = (userTree.findNode(userId)->data.get());
         if(movie->vipOnly && !(user->vipStatus))
             return StatusType::FAILURE;
         (movie->views)++;
@@ -286,8 +289,8 @@ StatusType streaming_database::group_watch(int groupId,int movieId)
         return StatusType::INVALID_INPUT;
     try
     {
-        movieData* movie = (movieTree.findNode(movieId))->data;
-        groupData* group = (groupTree.findNode(groupId))->data;
+        movieData* movie = (movieTree.findNode(movieId)->data.get());
+        groupData* group = (groupTree.findNode(groupId)->data.get());
         if((movie->vipOnly && (group->VIP_count == 0)) || (group->user_count == 0))
             return StatusType::FAILURE;
         movie->views += group->user_count;
@@ -352,23 +355,73 @@ StatusType streaming_database::get_all_movies(Genre genre, int *const output)
 {
     if(output == nullptr)
         return StatusType::INVALID_INPUT;
-    
+    int* sortedMoviesArray;
     switch(genre)
     {
         case Genre::COMEDY:
-            return comedyTree.insertDescendingOrder(output);
+            sortedMoviesArray = new int[comedyTree.getCount()];
+            if(comedyTree.insertDescendingOrder(sortedMoviesArray) == StatusType::FAILURE)
+            {
+                delete[] sortedMoviesArray;
+                return StatusType::FAILURE;
+            }
+            for (int i = 0; i < movieByRating.getCount(); i++) {
+                output[i] = sortedMoviesArray[i];
+            }
+            delete[] sortedMoviesArray;
+            return StatusType::SUCCESS;
             break;
         case Genre::DRAMA:
-            return dramaTree.insertDescendingOrder(output);
+            sortedMoviesArray = new int[dramaTree.getCount()];
+            if(dramaTree.insertDescendingOrder(sortedMoviesArray) == StatusType::FAILURE)
+            {
+                delete[] sortedMoviesArray;
+                return StatusType::FAILURE;
+            }
+            for (int i = 0; i < movieByRating.getCount(); i++) {
+                output[i] = sortedMoviesArray[i];
+            }
+            delete[] sortedMoviesArray;
+            return StatusType::SUCCESS;
             break;
         case Genre::ACTION:
-            return actionTree.insertDescendingOrder(output);
+            sortedMoviesArray = new int[actionTree.getCount()];
+            if(actionTree.insertDescendingOrder(sortedMoviesArray) == StatusType::FAILURE)
+            {
+                delete[] sortedMoviesArray;
+                return StatusType::FAILURE;
+            }
+            for (int i = 0; i < movieByRating.getCount(); i++) {
+                output[i] = sortedMoviesArray[i];
+            }
+            delete[] sortedMoviesArray;
+            return StatusType::SUCCESS;
             break;
         case Genre::FANTASY:
-            return fantasyTree.insertDescendingOrder(output);
+            sortedMoviesArray = new int[fantasyTree.getCount()];
+            if(fantasyTree.insertDescendingOrder(sortedMoviesArray) == StatusType::FAILURE)
+            {
+                delete[] sortedMoviesArray;
+                return StatusType::FAILURE;
+            }
+            for (int i = 0; i < movieByRating.getCount(); i++) {
+                output[i] = sortedMoviesArray[i];
+            }
+            delete[] sortedMoviesArray;
+            return StatusType::SUCCESS;
             break;
         default:
-            return movieTree.insertDescendingOrder(output);
+            sortedMoviesArray = new int[movieByRating.getCount()];
+            if(movieByRating.insertDescendingOrder(sortedMoviesArray) == StatusType::FAILURE)
+            {
+                delete[] sortedMoviesArray;
+                return StatusType::FAILURE;
+            }
+            for (int i = 0; i < movieByRating.getCount(); i++) {
+                output[i] = sortedMoviesArray[i];
+            }
+            delete[] sortedMoviesArray;
+            return StatusType::SUCCESS;
             break;
     }
 }
@@ -379,7 +432,7 @@ output_t<int> streaming_database::get_num_views(int userId, Genre genre)
         return output_t<int>(StatusType::INVALID_INPUT);
     try
     {
-        userData* user = (userTree.findNode(userId))->data;
+        userData* user = (userTree.findNode(userId)->data.get());
         switch(genre)
         {
             case Genre::COMEDY:
@@ -415,8 +468,8 @@ StatusType streaming_database::rate_movie(int userId, int movieId, int rating)
         return StatusType::INVALID_INPUT;
     try
     {
-        movieData* movie = movieTree.findNode(movieId)->data;
-        userData* user = userTree.findNode(userId)->data;
+        std::shared_ptr<movieData> movie = (movieTree.findNode(movieId)->data);
+        userData* user = (userTree.findNode(userId)->data.get());
         if(movie->vipOnly && !(user->vipStatus))
             return StatusType::FAILURE;
         switch(movie->genre)
@@ -465,7 +518,7 @@ output_t<int> streaming_database::get_group_recommendation(int groupId)
         return output_t<int>(StatusType::INVALID_INPUT);
     try
     {
-        groupData* group = groupTree.findNode(groupId)->data;
+        groupData* group = (groupTree.findNode(groupId)->data.get());
         Genre genre = group->findFavoriteGenre();
         int movieID;
         switch(genre)

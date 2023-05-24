@@ -27,11 +27,11 @@ template<class nodeType, class keyType>
 struct node
 {
     keyType key;
-    nodeType* data;
+    nodeType data;
     node* left;
     node* right;
     int height;
-    node(nodeType* data, keyType& key) : key(key), data(data), left(nullptr), right(nullptr), height(1){}
+    node(nodeType data, keyType& key) : key(key), data(data), left(nullptr), right(nullptr), height(1){}
     /*node& operator=(const node& other){
         key = other.key;
         delete data;
@@ -53,10 +53,36 @@ protected:
     node<nodeType, keyType>* root;
     
 public:
+    void printTree() const
+        {
+            printTree(root, 0);
+        }
+        void printTree(node<nodeType, keyType>* Node, int level) const {
+            if (Node == nullptr)
+                return;
+
+            // Print right subtree
+            printTree(Node->right, level + 1);
+
+            // Indentation based on the level
+            for (int i = 0; i < level; ++i)
+                std::cout << "    ";
+
+            // Print current node's ID
+            std::cout << Node->data->ID << std::endl;
+
+            // Print left subtree
+            printTree(Node->left, level + 1);
+        }
     tree() : root(nullptr), largest_node_ID(0), node_count(0) {}
     ~tree()
     {
         destroyTree(root);
+    }
+    
+    int getCount()
+    {
+        return node_count; 
     }
     
     /*tree& operator = (const tree& other)
@@ -106,10 +132,6 @@ public:
     {
         return root;
     }
-    int getCount()
-    {
-        return node_count; 
-    }
 
     node<nodeType, keyType>* rightRotate(node<nodeType, keyType>* node_a){
         node<nodeType, keyType>* node_b = node_a->left;
@@ -135,11 +157,11 @@ public:
 
     }
 
-    void insert(nodeType* data, keyType& key)
+    void insert(nodeType& data, keyType& key)
     {
         if(root == nullptr || key > rightLeaf(root)->key)
-            largest_node_ID = data->ID;
-        root = insert_recursion(root, *data, key);
+            largest_node_ID = data.get()->ID;
+        root = insert_recursion(root, data, key);
         node_count++;
     }
     
@@ -147,7 +169,7 @@ public:
     {
         if(Node == nullptr)
         {
-            node<nodeType, keyType>* new_node =  new node<nodeType, keyType>(&data, key);
+            node<nodeType, keyType>* new_node =  new node<nodeType, keyType>(data, key);
             return new_node;
         }
         if (key < Node->key)
@@ -421,13 +443,13 @@ struct groupData
     int ID;
     int user_count;
     int VIP_count;
-    tree<userData, int> users;
+    tree<std::shared_ptr<userData>, int> users;
     int group_watches[5]; //this will hold the number of watches as a collective
     int total_views[5]; //this will hold the number of views taking the size of the group into account
     
     groupData(int ID) : ID(ID), user_count(0), VIP_count(0), users(), group_watches(), total_views(){}
     
-    void add_user(userData* data)
+    void add_user(std::shared_ptr<userData> data)
     {
         users.insert(data, data->ID);
         user_count++;
@@ -465,17 +487,17 @@ struct groupData
     }
 };
 
-class groupTreeClass : public tree<groupData, int>
+class groupTreeClass : public tree<std::shared_ptr<groupData>, int>
 {
     public:
-    void removeAllUsers(node<userData, int>* userTreeRoot)
+    void removeAllUsers(node<std::shared_ptr<userData>, int>* userTreeRoot)
     {
         
         if(userTreeRoot)
         {
             removeAllUsers(userTreeRoot->right);
             removeAllUsers(userTreeRoot->left);
-            userTreeRoot->data->group = nullptr;
+            userTreeRoot->data.get()->group = nullptr;
         }
     }
 };

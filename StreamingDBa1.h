@@ -21,14 +21,15 @@
 
 class streaming_database {
 public:
-    tree<movieData, int> movieTree;
-    tree<userData, int> userTree;
+    tree<std::shared_ptr<movieData>, int> movieTree;
+    tree<std::shared_ptr<movieData>, movieData> movieByRating;
+    tree<std::shared_ptr<userData>, int> userTree;
     groupTreeClass groupTree;
-    tree<movieData, movieData> comedyTree;
-    tree<movieData, movieData> dramaTree;
-    tree<movieData, movieData> actionTree;
-    tree<movieData, movieData> fantasyTree;
-    tree<movieData, movieData> noneTree;
+    tree<std::shared_ptr<movieData>, movieData> comedyTree;
+    tree<std::shared_ptr<movieData>, movieData> dramaTree;
+    tree<std::shared_ptr<movieData>, movieData> actionTree;
+    tree<std::shared_ptr<movieData>, movieData> fantasyTree;
+    tree<std::shared_ptr<movieData>, movieData> noneTree;
     
 	
 public:
