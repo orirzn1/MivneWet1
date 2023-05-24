@@ -69,7 +69,7 @@ public:
                 std::cout << "    ";
 
             // Print current node's ID
-            std::cout << Node->data->ID << std::endl;
+            std::cout << Node->data.get()->ID << std::endl;
 
             // Print left subtree
             printTree(Node->left, level + 1);
@@ -256,7 +256,7 @@ public:
         root = remove_recursion(root, key, no_delete);
         if(rightLeaf(root))
         {
-            largest_node_ID = rightLeaf(root)->data->ID;
+            largest_node_ID = rightLeaf(root)->data.get()->ID;
         }
         node_count--;
     }
@@ -383,7 +383,7 @@ public:
         if(node == nullptr)
             return;
         insertDescendingOrderRecursion(output, node->right, index);
-        output[index] = node->data->ID;
+        output[index] = node->data.get()->ID;
         index++;
         insertDescendingOrderRecursion(output, node->left, index);
     }
@@ -451,7 +451,7 @@ struct groupData
     
     void add_user(std::shared_ptr<userData> data)
     {
-        users.insert(data, data->ID);
+        users.insert(data, data.get()->ID);
         user_count++;
         if(data->vipStatus == true)
             VIP_count++; 
