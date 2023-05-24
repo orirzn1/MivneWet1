@@ -229,24 +229,24 @@ public:
             Node->right = remove_recursion(Node->right, key);
         else
         {
-            if((Node->left == nullptr) || (Node->right == nullptr))
-            {
-                node<nodeType, keyType>* temp;
+            if((Node->left == nullptr) || (Node->right == nullptr)) {
+                node<nodeType, keyType> *temp;
                 if (Node->left)
                     temp = Node->left;
                 else
                     temp = Node->right;
                 // No child case
-                if (temp == nullptr)
-                {
-                    temp = Node;
-                    Node = nullptr;
+                if (temp == nullptr) {
+                    std::cout<<"option 1"<<std::endl;
+                    //delete Node->data;
+                    delete Node;
+                } else {// One child case
+                    std::cout<<"option 2"<<std::endl;
+                    node<nodeType, keyType> *old_ptr = Node;
+                    Node = temp;
+                    //delete old_ptr->data;
+                    //delete old_ptr;
                 }
-                else // One child case
-                    *Node = *temp;
-                delete temp->data;
-                delete temp;
-            }
             else
             {
                 // node with two children: Get smallest in the right subtree
