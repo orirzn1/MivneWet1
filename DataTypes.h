@@ -248,13 +248,15 @@ public:
             {
                 // node with two children: Get smallest in the right subtree
                 node<nodeType, keyType>* temp = leftLeaf(Node->right);
-     
+
                 // Copy data
+                Node->data = new nodeType(*(temp->data));
                 Node->key = temp->key;
-                Node->data = temp->data;
-     
+
                 // Delete smallest in right subtree
-                Node->right = rearrange_recursion(Node->right,temp->key);
+                if(Node->right != nullptr)
+                    Node->right = remove_recursion(Node->right,temp->key);
+
             }
         }
             if (Node == nullptr)
@@ -345,13 +347,16 @@ public:
             {
                 // node with two children: Get smallest in the right subtree
                 node<nodeType, keyType>* temp = leftLeaf(Node->right);
-     
+
                 // Copy data
+                delete Node->data;  // Delete the old node's data
+                Node->data = new nodeType(*(temp->data));
                 Node->key = temp->key;
-                Node->data = temp->data;
-     
+
                 // Delete smallest in right subtree
-                Node->right = remove_recursion(Node->right,temp->key);
+                if(Node->right != nullptr)
+                    Node->right = remove_recursion(Node->right,temp->key);
+
             }
         }
             if (Node == nullptr)
