@@ -202,6 +202,7 @@ StatusType streaming_database::add_user_to_group(int userId, int groupId)
         {
             user->group_watches_before_joining[i] = group->group_watches[i];
         }
+        user->group = group;
         group->users.printTree(); 
     }
     catch(Failure& e)
