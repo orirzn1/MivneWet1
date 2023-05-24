@@ -471,14 +471,14 @@ struct groupData
 class groupTreeClass : public tree<groupData, int>
 {
     public:
-    void removeAllUsers(node<userData, int>* N)
+    void removeAllUsers(node<userData, int>* userTreeRoot)
     {
         
-        if(N)
+        if(userTreeRoot)
         {
-            removeAllUsers(N->right);
-            removeAllUsers(N->left);
-            N->data->group = nullptr;
+            removeAllUsers(userTreeRoot->right);
+            removeAllUsers(userTreeRoot->left);
+            userTreeRoot->data->group = nullptr;
         }
     }
 };
