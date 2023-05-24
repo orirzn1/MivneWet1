@@ -237,15 +237,18 @@ public:
                     temp = Node->right;
                 // No child case
                 if (temp == nullptr) {
-                    std::cout<<"option 1"<<std::endl;
-                    //delete Node->data;
-                    delete Node;
+                    std::cout << "case 1"<< std::endl;
+                    temp = Node;
+                    Node = nullptr;
+                    delete temp->data;
+                    delete temp;
                 } else {// One child case
-                    std::cout<<"option 2"<<std::endl;
+                    std::cout << "case 2"<< std::endl;
                     node<nodeType, keyType> *old_ptr = Node;
                     Node = temp;
-                    //delete old_ptr->data;
-                    //delete old_ptr;
+                    delete old_ptr->data;
+                    delete old_ptr;
+
                 }
             else
             {
