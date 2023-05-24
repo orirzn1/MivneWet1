@@ -23,7 +23,7 @@ class streaming_database {
 public:
     tree<movieData, int> movieTree;
     tree<userData, int> userTree;
-    tree<groupData, int> groupTree;
+    groupTreeClass groupTree;
     tree<movieData, movieData> comedyTree;
     tree<movieData, movieData> dramaTree;
     tree<movieData, movieData> actionTree;

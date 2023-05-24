@@ -47,8 +47,7 @@ struct node
 template<class nodeType, class keyType>
 class tree
 {
-private:
-    
+protected:
     int largest_node_ID;
     int node_count;
     node<nodeType, keyType>* root;
@@ -465,6 +464,21 @@ struct groupData
             default:
                 return Genre::NONE;
                 break;
+        }
+    }
+};
+
+class groupTreeClass : public tree<groupData, int>
+{
+    public:
+    void removeAllUsers(node<userData, int>* N)
+    {
+        
+        if(N)
+        {
+            removeAllUsers(N->right);
+            removeAllUsers(N->left);
+            N->data->group = nullptr;
         }
     }
 };

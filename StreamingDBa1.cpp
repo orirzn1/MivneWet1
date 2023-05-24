@@ -170,6 +170,8 @@ StatusType streaming_database::remove_group(int groupId)
         return StatusType::INVALID_INPUT;
     try
     {
+        groupData* group = groupTree.findNode(groupId)->data;
+        groupTree.removeAllUsers(group->users.getRoot()); 
         groupTree.remove(groupId);
     }
     catch(std::bad_alloc& e)
