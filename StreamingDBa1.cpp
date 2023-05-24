@@ -365,7 +365,7 @@ StatusType streaming_database::get_all_movies(Genre genre, int *const output)
                 delete[] sortedMoviesArray;
                 return StatusType::FAILURE;
             }
-            for (int i = 0; i < movieByRating.getCount(); i++) {
+            for (int i = 0; i < comedyTree.getCount(); i++) {
                 output[i] = sortedMoviesArray[i];
             }
             delete[] sortedMoviesArray;
@@ -378,7 +378,7 @@ StatusType streaming_database::get_all_movies(Genre genre, int *const output)
                 delete[] sortedMoviesArray;
                 return StatusType::FAILURE;
             }
-            for (int i = 0; i < movieByRating.getCount(); i++) {
+            for (int i = 0; i < dramaTree.getCount(); i++) {
                 output[i] = sortedMoviesArray[i];
             }
             delete[] sortedMoviesArray;
@@ -391,7 +391,7 @@ StatusType streaming_database::get_all_movies(Genre genre, int *const output)
                 delete[] sortedMoviesArray;
                 return StatusType::FAILURE;
             }
-            for (int i = 0; i < movieByRating.getCount(); i++) {
+            for (int i = 0; i < actionTree.getCount(); i++) {
                 output[i] = sortedMoviesArray[i];
             }
             delete[] sortedMoviesArray;
@@ -404,7 +404,7 @@ StatusType streaming_database::get_all_movies(Genre genre, int *const output)
                 delete[] sortedMoviesArray;
                 return StatusType::FAILURE;
             }
-            for (int i = 0; i < movieByRating.getCount(); i++) {
+            for (int i = 0; i < fantasyTree.getCount(); i++) {
                 output[i] = sortedMoviesArray[i];
             }
             delete[] sortedMoviesArray;

@@ -14,6 +14,8 @@
 #include <iostream>
 #include <memory>
 
+class movieData;
+
 class Failure : public std::exception
 {
 public:
@@ -370,22 +372,25 @@ public:
         }
     }
 
-    StatusType insertDescendingOrder(int *const output)
+    StatusType insertDescendingOrder(int* const output)
     {
+        int initial_index = 0;
         if(this->node_count == 0)
             return StatusType::FAILURE;
-        insertDescendingOrderRecursion(output, root, 0);
+        insertDescendingOrderRecursion(output, root, &initial_index);
         return StatusType::SUCCESS;
     }
     
-    void insertDescendingOrderRecursion(int *const output, node<nodeType, keyType>* node, int index)
+    void insertDescendingOrderRecursion(int* const output, node<nodeType, keyType>* node, int* index)
     {
         if(node == nullptr)
             return;
-        insertDescendingOrderRecursion(output, node->right, index);
-        output[index] = node->data.get()->ID;
-        index++;
-        insertDescendingOrderRecursion(output, node->left, index);
+        if(node->right)
+            insertDescendingOrderRecursion(output, node->right, index);
+        output[*index] = node->data.get()->ID;
+        ++*index; 
+        if(node->left)
+            insertDescendingOrderRecursion(output, node->left, index);
     }
 };
 
@@ -398,6 +403,7 @@ struct movieData
     int rating;
     int num_of_ratings;
     movieData(int ID, Genre genre, int views, bool VIP) : ID(ID), genre(genre), views(views), vipOnly(VIP), rating(0), num_of_ratings(0) {}
+    movieData() = default; 
     ~movieData() = default;
     
     bool operator < (const movieData& other)
