@@ -60,21 +60,21 @@ StatusType streaming_database::remove_movie(int movieId)
         switch(genre)
         {
             case Genre::COMEDY:
-                comedyTree.rearrange(data);
+                comedyTree.remove(data, false);
                 break;
             case Genre::DRAMA:
-                dramaTree.rearrange(data);
+                dramaTree.remove(data, false);
                 break;
             case Genre::ACTION:
-                actionTree.rearrange(data);
+                actionTree.remove(data, false);
                 break;
             case Genre::FANTASY:
-                fantasyTree.rearrange(data);
+                fantasyTree.remove(data, false);
                 break;
             default:
                 break;
         }
-        movieByRating.rearrange(data);
+        movieByRating.remove(data, false);
         movieTree.remove(movieId, false);
     }
     catch(std::bad_alloc& e)
@@ -127,7 +127,7 @@ StatusType streaming_database::remove_user(int userId)
             }
             if(data.vipStatus)
                 data.group->VIP_count--;
-            data.group->users.rearrange(userId);
+            data.group->users.remove(userId, false);
         }
         data.group = nullptr; 
         userTree.remove(userId, false);
@@ -238,8 +238,8 @@ StatusType streaming_database::user_watch(int userId, int movieId)
                 {
                     user->group->total_views[0]++;
                 }
-                comedyTree.rearrange(*movie);
-                movieByRating.rearrange(*movie);
+                comedyTree.remove(*movie, false);
+                movieByRating.remove(*movie, false);
                 (movie->views)++;
                 comedyTree.insert(movie,*movie);
                 movieByRating.insert(movie,*movie);
@@ -252,8 +252,8 @@ StatusType streaming_database::user_watch(int userId, int movieId)
                 {
                     user->group->total_views[1]++;
                 }
-                dramaTree.rearrange(*movie);
-                movieByRating.rearrange(*movie);
+                dramaTree.remove(*movie, false);
+                movieByRating.remove(*movie, false);
                 (movie->views)++;
                 dramaTree.insert(movie,*movie);
                 movieByRating.insert(movie,*movie);
@@ -265,8 +265,8 @@ StatusType streaming_database::user_watch(int userId, int movieId)
                 {
                     user->group->total_views[2]++;
                 }
-                actionTree.rearrange(*movie);
-                movieByRating.rearrange(*movie);
+                actionTree.remove(*movie, false);
+                movieByRating.remove(*movie, false);
                 (movie->views)++;
                 actionTree.insert(movie,*movie);
                 movieByRating.insert(movie,*movie);
@@ -278,8 +278,8 @@ StatusType streaming_database::user_watch(int userId, int movieId)
                 {
                     user->group->total_views[3]++;
                 }
-                fantasyTree.rearrange(*movie);
-                movieByRating.rearrange(*movie);
+                fantasyTree.remove(*movie, false);
+                movieByRating.remove(*movie, false);
                 (movie->views)++;
                 fantasyTree.insert(movie,*movie);
                 movieByRating.insert(movie,*movie);
@@ -321,8 +321,8 @@ StatusType streaming_database::group_watch(int groupId,int movieId)
                 group->total_views[0] += group->user_count;
                 group->group_watches[4]++;
                 group->total_views[4] += group->user_count;
-                comedyTree.rearrange(*movie);
-                movieByRating.rearrange(*movie);
+                comedyTree.remove(*movie, false);
+                movieByRating.remove(*movie, false);
                 movie->views += group->user_count;
                 comedyTree.insert(movie,*movie);
                 movieByRating.insert(movie,*movie);
@@ -332,8 +332,8 @@ StatusType streaming_database::group_watch(int groupId,int movieId)
                 group->total_views[1] += group->user_count;
                 group->group_watches[4]++;
                 group->total_views[4] += group->user_count;
-                dramaTree.rearrange(*movie);
-                movieByRating.rearrange(*movie);
+                dramaTree.remove(*movie, false);
+                movieByRating.remove(*movie, false);
                 movie->views += group->user_count;
                 dramaTree.insert(movie,*movie);
                 movieByRating.insert(movie,*movie);
@@ -343,8 +343,8 @@ StatusType streaming_database::group_watch(int groupId,int movieId)
                 group->total_views[2] += group->user_count;
                 group->group_watches[4]++;
                 group->total_views[4] += group->user_count;
-                actionTree.rearrange(*movie);
-                movieByRating.rearrange(*movie);
+                actionTree.remove(*movie, false);
+                movieByRating.remove(*movie, false);
                 movie->views += group->user_count;
                 actionTree.insert(movie,*movie);
                 movieByRating.insert(movie,*movie);
@@ -354,8 +354,8 @@ StatusType streaming_database::group_watch(int groupId,int movieId)
                 group->total_views[3] += group->user_count;
                 group->group_watches[4]++;
                 group->total_views[4] += group->user_count;
-                fantasyTree.rearrange(*movie);
-                movieByRating.rearrange(*movie);
+                fantasyTree.remove(*movie, false);
+                movieByRating.remove(*movie, false);
                 movie->views += group->user_count;
                 fantasyTree.insert(movie,*movie);
                 movieByRating.insert(movie,*movie);
@@ -543,29 +543,29 @@ StatusType streaming_database::rate_movie(int userId, int movieId, int rating)
         switch(movie->genre)
         {
             case Genre::COMEDY:
-                comedyTree.rearrange(*movie);
-                movieByRating.rearrange(*movie);
+                comedyTree.remove(*movie, false);
+                movieByRating.remove(*movie, false);
                 movie->rating = ((movie->rating)*movie->num_of_ratings + rating)/(++movie->num_of_ratings);
                 comedyTree.insert(movie, *movie);
                 movieByRating.insert(movie,*movie);
                 break;
             case Genre::DRAMA:
-                dramaTree.rearrange(*movie);
-                movieByRating.rearrange(*movie);
+                dramaTree.remove(*movie, false);
+                movieByRating.remove(*movie, false);
                 movie->rating = ((movie->rating)*movie->num_of_ratings + rating)/(++movie->num_of_ratings);
                 dramaTree.insert(movie, *movie);
                 movieByRating.insert(movie,*movie);
                 break;
             case Genre::ACTION:
-                actionTree.rearrange(*movie);
-                movieByRating.rearrange(*movie);
+                actionTree.remove(*movie, false);
+                movieByRating.remove(*movie, false);
                 movie->rating = ((movie->rating)*movie->num_of_ratings + rating)/(++movie->num_of_ratings);
                 actionTree.insert(movie, *movie);
                 movieByRating.insert(movie,*movie);
                 break;
             case Genre::FANTASY:
-                fantasyTree.rearrange(*movie);
-                movieByRating.rearrange(*movie);
+                fantasyTree.remove(*movie, false);
+                movieByRating.remove(*movie, false);
                 movie->rating = ((movie->rating)*movie->num_of_ratings + rating)/(++movie->num_of_ratings);
                 fantasyTree.insert(movie, *movie);
                 movieByRating.insert(movie,*movie);
