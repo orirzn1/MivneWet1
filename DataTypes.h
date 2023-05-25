@@ -76,7 +76,7 @@ public:
             // Print left subtree
             printTree(Node->left, level + 1);
         }
-    tree() : root(nullptr), largest_node_ID(0), node_count(0) {}
+    tree() :  largest_node_ID(0), node_count(0), root(nullptr) {}
     ~tree()
     {
         destroyTree(root);

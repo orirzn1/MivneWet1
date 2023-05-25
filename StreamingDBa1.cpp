@@ -1,6 +1,6 @@
 #include "StreamingDBa1.h"
 
-streaming_database::streaming_database() : movieTree(), movieByRating(), userTree(), groupTree(), comedyTree(), dramaTree(), actionTree(), fantasyTree(), noneTree(){
+streaming_database::streaming_database() : movieTree(), movieByRating(), userTree(), groupTree(), comedyTree(), dramaTree(), actionTree(), fantasyTree(){
 }
 
 streaming_database::~streaming_database(){
@@ -32,9 +32,7 @@ StatusType streaming_database::add_movie(int movieId, Genre genre, int views, bo
             case Genre::FANTASY:
                 fantasyTree.insert(data, *data);
                 break;
-            case Genre::NONE:
-                noneTree.insert(data, *data);
-                break;
+
         }
             
     }
@@ -70,9 +68,6 @@ StatusType streaming_database::remove_movie(int movieId)
                 break;
             case Genre::FANTASY:
                 fantasyTree.rearrange(data);
-                break;
-            case Genre::NONE:
-                noneTree.rearrange(data);
                 break;
         }
         movieByRating.rearrange(data);
@@ -283,19 +278,6 @@ StatusType streaming_database::user_watch(int userId, int movieId)
                 fantasyTree.insert(movie,*movie);
                 movieByRating.insert(movie,*movie);
                 break;
-            case Genre::NONE:
-                user->views[4]++;
-                if(user->group)
-                {
-                    user->group->group_watches[4]++;
-                    user->group->total_views[4]++;
-                }
-                noneTree.rearrange(*movie);
-                movieByRating.rearrange(*movie);
-                (movie->views)++;
-                noneTree.insert(movie,*movie);
-                movieByRating.insert(movie,*movie);
-                break;
         }
     }
     catch(Failure& e)
@@ -359,15 +341,6 @@ StatusType streaming_database::group_watch(int groupId,int movieId)
                 fantasyTree.insert(movie,*movie);
                 movieByRating.insert(movie,*movie);
                 break;
-            case Genre::NONE:
-                group->group_watches[4]++;
-                group->total_views[4] += group->user_count;
-                noneTree.rearrange(*movie);
-                movieByRating.rearrange(*movie);
-                movie->views += group->user_count;
-                noneTree.insert(movie,*movie);
-                movieByRating.insert(movie,*movie);
-                break;
         }
     }
     catch(Failure& e)
@@ -398,7 +371,7 @@ output_t<int> streaming_database::get_all_movies_count(Genre genre)
             return output_t<int>(fantasyTree.getCount());
             break;
         default:
-            return output_t<int>(comedyTree.getCount()+dramaTree.getCount()+actionTree.getCount()+fantasyTree.getCount()+noneTree.getCount());
+            return output_t<int>(comedyTree.getCount()+dramaTree.getCount()+actionTree.getCount()+fantasyTree.getCount());
             break;
     }
 }
@@ -554,13 +527,6 @@ StatusType streaming_database::rate_movie(int userId, int movieId, int rating)
                 fantasyTree.insert(movie, *movie);
                 movieByRating.insert(movie,*movie);
                 break;
-            case Genre::NONE:
-                noneTree.rearrange(*movie);
-                movieByRating.rearrange(*movie);
-                movie->rating = (movie->rating + rating)/(++movie->num_of_ratings);
-                noneTree.insert(movie, *movie);
-                movieByRating.insert(movie,*movie);
-                break;
         }
     }
     catch(std::bad_alloc& e)
@@ -605,12 +571,6 @@ output_t<int> streaming_database::get_group_recommendation(int groupId)
                 break;
             case Genre::FANTASY:
                 movieID = fantasyTree.getLargestNodeID();
-                if(movieID != 0)
-                    return output_t<int>(movieID);
-                return output_t<int>(StatusType::FAILURE);
-                break;
-            default:
-                movieID = noneTree.getLargestNodeID();
                 if(movieID != 0)
                     return output_t<int>(movieID);
                 return output_t<int>(StatusType::FAILURE);
