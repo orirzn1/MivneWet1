@@ -483,13 +483,16 @@ struct groupData
     Genre findFavoriteGenre()
     {
         int max = 0;
-        for(int i = 1; i < 5; i++)
+        for(int i = 0; i < 4; i++)
         {
-           if(total_views[i] > total_views[i-1])
+
+           if(total_views[i] > total_views[max] || (total_views[i]==total_views[max] && i < max)) {
                max = i;
+
+           }
         }
-        if(total_views[max] == 0)
-            throw Failure();
+      //  if(total_views[max] == 0)
+           // throw Failure();
         switch(max)
         {
             case 0:
@@ -521,6 +524,8 @@ class groupTreeClass : public tree<std::shared_ptr<groupData>, int>
         {
             removeAllUsers(userTreeRoot->right);
             removeAllUsers(userTreeRoot->left);
+            for(int i = 0; i < 5; i++)
+                userTreeRoot->data.get()->views[i] += (userTreeRoot->data.get()->group->group_watches[i] - userTreeRoot->data.get()->group_watches_before_joining[i]);
             userTreeRoot->data.get()->group = nullptr;
         }
     }
