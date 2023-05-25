@@ -129,6 +129,7 @@ StatusType streaming_database::remove_user(int userId)
                 data.group->VIP_count--;
             data.group->users.rearrange(userId);
         }
+        data.group = nullptr; 
         userTree.remove(userId, false);
     }
     catch(std::bad_alloc& e)
@@ -234,7 +235,7 @@ StatusType streaming_database::user_watch(int userId, int movieId)
                 if(user->group)
                 {
                     user->group->group_watches[0]++;
-                    user->group->total_views[0] += user->group->user_count;
+                    user->group->total_views[0]++;
                 }
                 break;
             case Genre::DRAMA:
@@ -242,7 +243,7 @@ StatusType streaming_database::user_watch(int userId, int movieId)
                 if(user->group)
                 {
                     user->group->group_watches[1]++;
-                    user->group->total_views[1] += user->group->user_count;
+                    user->group->total_views[1]++;
                 }
                 break;
             case Genre::ACTION:
@@ -250,7 +251,7 @@ StatusType streaming_database::user_watch(int userId, int movieId)
                 if(user->group)
                 {
                     user->group->group_watches[2]++;
-                    user->group->total_views[2] += user->group->user_count;
+                    user->group->total_views[2]++;
                 }
                 break;
             case Genre::FANTASY:
@@ -258,7 +259,7 @@ StatusType streaming_database::user_watch(int userId, int movieId)
                 if(user->group)
                 {
                     user->group->group_watches[3]++;
-                    user->group->total_views[3] += user->group->user_count;
+                    user->group->total_views[3]++;
                 }
                 break;
             case Genre::NONE:
@@ -266,7 +267,7 @@ StatusType streaming_database::user_watch(int userId, int movieId)
                 if(user->group)
                 {
                     user->group->group_watches[4]++;
-                    user->group->total_views[4] += user->group->user_count;
+                    user->group->total_views[4]++;
                 }
                 break;
         }
