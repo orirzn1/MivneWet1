@@ -241,18 +241,23 @@ public:
     {
         node<nodeType, keyType>* current = root;
         while(current) {
-            if (!(key>current->key) && !(key<current->key))
+            if (!(key>current->key) && !(key<current->key)) {
                 return true;
-            else if (key < current->key)
+            }
+            else if (key < current->key) {
                 current = current->left;
+            }
             else
+            {
                 current = current->right;
+            }
         }
         return false;
     }
     
     void remove(keyType& key, bool no_delete)
     {
+
         if(!contains(key))
             throw Failure();
         root = remove_recursion(root, key, no_delete);
@@ -409,23 +414,35 @@ struct movieData
     bool operator < (const movieData& other)
     {
         if(rating < other.rating)
+        {
             return true;
+        }
         if(rating == other.rating && views < other.views)
+        {
             return true;
+        }
         if(rating == other.rating && views == other.views && ID > other.ID)
+        {
             return true;
-        
+        }
+
         return false;
     }
     bool operator > (const movieData& other)
     {
         if(rating > other.rating)
+        {
             return true;
+        }
         if(rating == other.rating && views > other.views)
+        {
             return true;
+        }
         if(rating == other.rating && views == other.views && ID < other.ID)
+        {
             return true;
-        
+        }
+
         return false;
     }
 };
