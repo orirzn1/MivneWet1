@@ -382,18 +382,19 @@ public:
         int initial_index = 0;
         if(this->node_count == 0)
             return StatusType::FAILURE;
-        insertDescendingOrderRecursion(output, root, &initial_index);
+        insertDescendingOrderRecursion(output, root, initial_index);
         return StatusType::SUCCESS;
     }
     
-    void insertDescendingOrderRecursion(int* const output, node<nodeType, keyType>* node, int* index)
+    void insertDescendingOrderRecursion(int* const output, node<nodeType, keyType>* node, int& index)
     {
+
         if(node == nullptr)
             return;
         if(node->right)
             insertDescendingOrderRecursion(output, node->right, index);
-        output[*index] = node->data.get()->ID;
-        ++*index; 
+        output[index] = node->data.get()->ID;
+        ++index;
         if(node->left)
             insertDescendingOrderRecursion(output, node->left, index);
     }

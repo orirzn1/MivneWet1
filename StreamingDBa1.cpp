@@ -398,7 +398,7 @@ output_t<int> streaming_database::get_all_movies_count(Genre genre)
             return output_t<int>(fantasyTree.getCount());
             break;
         default:
-            return output_t<int>(noneTree.getCount());
+            return output_t<int>(comedyTree.getCount()+dramaTree.getCount()+actionTree.getCount()+fantasyTree.getCount()+noneTree.getCount());
             break;
     }
 }
