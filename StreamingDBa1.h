@@ -20,7 +20,7 @@
 #include <memory>
 
 class streaming_database {
-public:
+
     tree<std::shared_ptr<movieData>, int> movieTree;
     tree<std::shared_ptr<movieData>, movieData> movieByRating;
     tree<std::shared_ptr<userData>, int> userTree;

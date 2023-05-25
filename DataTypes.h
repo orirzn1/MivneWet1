@@ -34,16 +34,7 @@ struct node
     node* right;
     int height;
     node(nodeType data, keyType& key) : key(key), data(data), left(nullptr), right(nullptr), height(1){}
-    /*node& operator=(const node& other){
-        key = other.key;
-        delete data;
-        data = other.data;
-        left = other.left;
-        right = other.right;
-        height = other.height;
 
-        return *this;
-    }*/
 };
 
 template<class nodeType, class keyType>
@@ -55,27 +46,7 @@ protected:
     node<nodeType, keyType>* root;
     
 public:
-    void printTree() const
-        {
-            printTree(root, 0);
-        }
-        void printTree(node<nodeType, keyType>* Node, int level) const {
-            if (Node == nullptr)
-                return;
 
-            // Print right subtree
-            printTree(Node->right, level + 1);
-
-            // Indentation based on the level
-            for (int i = 0; i < level; ++i)
-                std::cout << "    ";
-
-            // Print current node's ID
-            std::cout << Node->data.get()->ID << std::endl;
-
-            // Print left subtree
-            printTree(Node->left, level + 1);
-        }
     tree() :  largest_node_ID(0), node_count(0), root(nullptr) {}
     ~tree()
     {
@@ -87,14 +58,7 @@ public:
         return node_count; 
     }
     
-    /*tree& operator = (const tree& other)
-    {
-        largest_node_ID = other.largest_node_ID;
-        node_count = other.node_count;
-        root = other.root;
-        
-        return *this; 
-    }*/
+
     
     void destroyTree(node<nodeType, keyType>* N)
     {
@@ -102,8 +66,7 @@ public:
         {
             destroyTree(N->right);
             destroyTree(N->left);
-            //if(N->data)
-                //delete N->data;
+
             delete N; 
         }
         N = nullptr;
@@ -231,11 +194,7 @@ public:
             current = current->right;
         return current;
     }
-    
-    void rearrange(keyType& key)
-    {
-        remove(key, true); 
-    }
+
     
     bool contains(keyType& key)
     {
@@ -406,7 +365,7 @@ struct movieData
     Genre genre;
     int views;
     bool vipOnly;
-    int rating;
+    double rating;
     int num_of_ratings;
     movieData(int ID, Genre genre, int views, bool VIP) : ID(ID), genre(genre), views(views), vipOnly(VIP), rating(0), num_of_ratings(0) {}
     movieData() = default; 
@@ -491,8 +450,7 @@ struct groupData
 
            }
         }
-      //  if(total_views[max] == 0)
-           // throw Failure();
+
         switch(max)
         {
             case 0:
