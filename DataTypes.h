@@ -214,12 +214,12 @@ public:
         return false;
     }
     
-    void remove(keyType& key, bool no_delete)
+    void remove(keyType& key)
     {
 
         if(!contains(key))
             throw Failure();
-        root = remove_recursion(root, key, no_delete);
+        root = remove_recursion(root, key);
         if(rightLeaf(root))
         {
             largest_node_ID = rightLeaf(root)->data.get()->ID;
@@ -277,7 +277,7 @@ public:
       return balance(Node);
     }
     
-    node<nodeType, keyType>* remove_recursion(node<nodeType, keyType>* Node, keyType& key, bool no_delete)
+    node<nodeType, keyType>* remove_recursion(node<nodeType, keyType>* Node, keyType& key)
     {
         try {
             if (Node == nullptr)
@@ -286,19 +286,18 @@ public:
             }
             if (key < Node->key)
             {
-                Node->left = remove_recursion(Node->left, key, no_delete);
+                Node->left = remove_recursion(Node->left, key);
             }
             else if (key > Node->key)
             {
-                Node->right = remove_recursion(Node->right, key, no_delete);
+                Node->right = remove_recursion(Node->right, key);
             }
             else
             {
                 //currentNode is the node with the given key that we want to delete
                 node<nodeType,keyType>* leftChild = Node->left;
                 node<nodeType,keyType>* rightChild = Node->right;
-                if(!no_delete)
-                    delete Node;
+                delete Node;
                 if (!rightChild) {
                     return leftChild;
                 }
